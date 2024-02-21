@@ -15,6 +15,7 @@ void UMainUIWidget::NativeConstruct()
 
     if(anxietyBar && crossHair && interacText)
     {
+        SetFlashlightBarOpacity(Zero);
         anxietyBar->SetPercent(Zero);
         SetAnxietyBarOpacity(Zero);
         SetCrossHairOpacity(Zero);
@@ -86,4 +87,25 @@ void UMainUIWidget::SetInteractText(float opacity)
 {
     interacText->SetRenderOpacity(FMath::FInterpTo(opacity, anxietyBar->RenderOpacity, GetWorld()->GetDeltaSeconds(), 0.01f));
     
+}
+
+// Method to control Bar and text indicator, helps the player know the quantity of flashlight while playing.
+void UMainUIWidget::UpdateFlashlight(float value)
+{
+    if(flashlightBar)
+    {
+        float ClampedValue = FMath::Clamp(value, 0.0f, 1.0f);
+        flashlightBar->SetPercent(ClampedValue);
+    }else
+    {
+        UE_LOG(LogTemp, Error, TEXT("No flashlightBar found in WidgetBlueprint"));
+    }
+
+}
+
+// Set the opacity, this depends if character is using flashlight or not.
+void UMainUIWidget::SetFlashlightBarOpacity(float opacity)
+{
+    flashlightBar->SetRenderOpacity(FMath::FInterpTo(opacity, anxietyBar->RenderOpacity, GetWorld()->GetDeltaSeconds(), 0.01f));
+
 }

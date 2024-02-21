@@ -38,7 +38,6 @@ public:
 
 private:
 	class ABaseCharacterController* characterController;
-	FTimerHandle timeHandle;
 
 	////////////////////////////////////////////// WIDGET SECTION //////////////////////////////////////////////
 	// This section contains properties and methods related to character's Widget.
@@ -126,6 +125,8 @@ private:
 	bool isMoving = false;
 	bool isSprinting;
 
+	FTimerHandle timeHandle;
+
 	////////////////////////////////////////////// INTERACTION SECTION //////////////////////////////////////////////
 	// This section contains properties and methods related to character interaction mechanic.
 	UPROPERTY(EditAnywhere, Category = "Character Throw", meta = (AllowPrivateAccess))
@@ -166,9 +167,26 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Character Lartern", meta = (AllowPrivateAccess))
 	float lanternIntensity = 800.0f;
 
+	// Baterry flashlight properties.
+	UPROPERTY(EditAnywhere, Category = "Character Lartern", meta = (AllowPrivateAccess))
+	float maxBatteryAmount = 100.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Character Lartern", meta = (AllowPrivateAccess))
+	float batteryWearAmount = 0.1f;
+
+	UPROPERTY(EditAnywhere, Category = "Character Lartern", meta = (AllowPrivateAccess))
+	float currentBatteryAmount = 0.0f;
+
 	// Methods that manage the lantern state.
 	void LanternON();
 	void LanternOFF();
 	void SetLanternIntensity(float intensity);
+
+	// Method that manage lantern's battery
+	void UseLanternBattery();
+
+	bool isLanternOn;
+
+	FTimerHandle timeHandleFlashLight;
 
 };

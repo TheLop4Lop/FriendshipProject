@@ -407,14 +407,23 @@ void ABaseCharacter::LanternON()
 {
     if(!isAiming)
     {
+        isLanternOn = true;
         SetLanternIntensity(lanternIntensity);
+        GetWorldTimerManager().SetTimer(timeHandleFlashLight, this, &ABaseCharacter::UseLanternBattery, 0.0625f, isLanternOn);
     }
 
 }
 
 void ABaseCharacter::LanternOFF()
 {
+    isLanternOn = false;
     SetLanternIntensity(Zero);
+    GetWorldTimerManager().ClearTimer(timeHandleFlashLight);
+
+    if(mainWidget)
+    {
+        mainWidget->SetFlashlightBarOpacity(Zero);
+    }
 
 }
 
@@ -426,6 +435,24 @@ void ABaseCharacter::SetLanternIntensity(float intensity)
     }else
     {
         UE_LOG(LogTemp, Warning, TEXT("No Lanter class to interact."));
+    }
+
+}
+
+void ABaseCharacter::UseLanternBattery()
+{
+    currentBatteryAmount -= batteryWearAmount;
+    if(mainWidget)
+    {
+        mainWidget->SetFlashlightBarOpacity(1.0f);
+        mainWidget->UpdateFlashlight(currentBatteryAmount/maxBatteryAmount);
+
+        if(currentBatteryAmount <= Zero)
+        {
+            LanternOFF();
+            currentBatteryAmount = Zero;
+            mainWidget->SetFlashlightBarOpacity(Zero);
+        }
     }
 
 }
