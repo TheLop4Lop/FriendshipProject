@@ -6,6 +6,15 @@
 #include "GameFramework/Character.h"
 #include "BaseCharacter.generated.h"
 
+// ENUM used to determine the controller of the player, this will change the interaction text on mainWidget.
+UENUM(BlueprintType)
+enum class EInputControllerType : uint8
+{
+	KEYBOARD_CONTROLLER,
+	CONTROLLER_CONTROLLER,
+	OCULUS_CONTROLLER
+};
+
 float const MaxAnsiety = 100; // Max anxiety value const.
 float const Zero = 0; // Zero value const.
 float const InterpMin = 0.3; // Interpolation minimum paramenter.
@@ -27,6 +36,9 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	// ENUM variable, keeps track of the controller, updated on players input.
+	EInputControllerType controllerType;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -93,6 +105,10 @@ private:
 	void TurnRightController(float value);
 	float yAxisRate = 5;
 	float xAxisRate = 5;
+
+	// Methods used to define what kind of controller the player is usign.
+	void SetUsingKeyBoard();
+	void SetUsingController(float value);
 
 	// Control Swap state.
 	bool controlSwap = false;

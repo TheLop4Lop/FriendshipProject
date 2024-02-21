@@ -19,21 +19,3 @@ void ABaseCharacterController::SetupInputComponent()
     Super::SetupInputComponent();
 
 }
-
-EInputType ABaseCharacterController::GetPlayerControllerType()
-{   
-    if(this)
-    {
-        //EInputType InputDevice;
-        if(PlayerInput && PlayerInput->IsPressed(EKeys::Gamepad_LeftThumbstick))
-        {
-            UE_LOG(LogTemp, Display, TEXT("GAMEPAAAAD"));
-        }else if(PlayerInput && PlayerInput->IsPressed(EKeys::W))
-        {
-            UE_LOG(LogTemp, Display, TEXT("KEYBOAAAAAARD"));
-        }
-    }
-
-    return EInputType::KEYBOARD_CONTROLLER;
-
-}

@@ -5,7 +5,6 @@
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "Components/Image.h"
-#include "BaseCharacter.h"
 
 #define Zero 0
 
@@ -82,6 +81,32 @@ void UMainUIWidget::SetCrossHairColor(FLinearColor color)
 
 }
 
+// Method to control content of text, this depends on the type of controller the player.
+void UMainUIWidget::SetTextContentByController(EInputControllerType controllerType)
+{
+    FString updateText;
+    switch(controllerType)
+    {
+        case EInputControllerType::CONTROLLER_CONTROLLER:
+            updateText = TEXT("Press '■' to take.");
+            interacText->SetText(FText::FromString(updateText));
+            break;
+        
+        case EInputControllerType::KEYBOARD_CONTROLLER:
+            updateText = TEXT("Press 'E' to take.");
+            interacText->SetText(FText::FromString(updateText));
+            break;
+    
+        case EInputControllerType::OCULUS_CONTROLLER:
+            updateText = TEXT("Grap to take.");
+            interacText->SetText(FText::FromString(updateText));
+            break;
+        
+        default:
+            break;
+    }
+}
+
 // Method to control text, indicate the player that the object can be picked.
 void UMainUIWidget::SetInteractText(float opacity)
 {
@@ -89,7 +114,6 @@ void UMainUIWidget::SetInteractText(float opacity)
     
 }
 
-// Method to control Bar and text indicator, helps the player know the quantity of flashlight while playing.
 void UMainUIWidget::UpdateFlashlight(float value)
 {
     if(flashlightBar)

@@ -65,6 +65,9 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 	if(PlayerInputComponent)
 	{
+        InputComponent->BindAction(TEXT("KEYBOARD"), EInputEvent::IE_Pressed, this, &ABaseCharacter::SetUsingKeyBoard);
+        InputComponent->BindAxis(TEXT("GAMEPAD"), this, &ABaseCharacter::SetUsingController);
+
 		InputComponent->BindAxis(TEXT("WKey"), this, &ABaseCharacter::HandleMovementInputAxis1); 
         InputComponent->BindAxis(TEXT("RKey"), this, &ABaseCharacter::HandleMovementInputAxis2);
 
@@ -200,6 +203,22 @@ void ABaseCharacter::LookUpController(float value)
 void ABaseCharacter::TurnRightController(float value)
 {
 	AddControllerYawInput(value * (xAxisRate * GetWorld()->GetDeltaSeconds()));
+
+}
+
+// Methods used to define what kind of controller the player is usign.
+void ABaseCharacter::SetUsingKeyBoard()
+{
+    controllerType = EInputControllerType::KEYBOARD_CONTROLLER;
+
+}
+
+void ABaseCharacter::SetUsingController(float value)
+{
+    if(value > 0.1f)
+    {
+        controllerType = EInputControllerType::CONTROLLER_CONTROLLER;
+    }
 
 }
 
@@ -347,6 +366,7 @@ void ABaseCharacter::GetActorToInteractInTheWorld()
     pickableActor = ActorTargetByLineTrace(Hit, pickRange);
     if(pickableActor && pickableActor->ActorHasTag(TagPickableActor))
     {
+        mainWidget->SetTextContentByController(controllerType);
         mainWidget->SetInteractText(1.0f);
     }else
     {

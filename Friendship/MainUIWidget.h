@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "BaseCharacter.h" // For MainUIWdget to have EInputControllerType
 #include "MainUIWidget.generated.h"
 
 /**
@@ -28,6 +29,8 @@ public:
 	// Method to change color of CrossHair, this depends on what kind of actor is the player looking at.
 	void SetCrossHairColor(FLinearColor color);
 
+	// Method to control content of text, this depends on the type of controller the player.
+	void SetTextContentByController(EInputControllerType controllerType);
 	// Method to control text, indicate the player that the object can be picked.
 	void SetInteractText(float opacity);
 
