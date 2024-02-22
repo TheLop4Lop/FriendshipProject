@@ -87,6 +87,8 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
         InputComponent->BindAction(TEXT("ThrowProjectile"), EInputEvent::IE_Pressed, this, &ABaseCharacter::ThrowProjectile);
         InputComponent->BindAction(TEXT("Lantern"), EInputEvent::IE_Pressed, this, &ABaseCharacter::LanternON);
         InputComponent->BindAction(TEXT("Lantern"), EInputEvent::IE_Released, this, &ABaseCharacter::LanternOFF);
+
+        InputComponent->BindAction(TEXT("Take"), EInputEvent::IE_Pressed, this, &ABaseCharacter::TakeObject);
 	}
 
 }
@@ -363,8 +365,8 @@ void ABaseCharacter::ThrowProjectile()
 // Method that change the properties of mainWidget, this to detemine the type of actor, if it can be destroyed or be picked.
 void ABaseCharacter::GetActorToInteractInTheWorld()
 {
-    pickableActor = ActorTargetByLineTrace(Hit, pickRange);
-    if(pickableActor && pickableActor->ActorHasTag(TagPickableActor))
+    pickableActor = Cast<ABaseTakeable>(ActorTargetByLineTrace(Hit, pickRange));
+    if(pickableActor && pickableActor->ActorHasTag(TagTakeableActor))
     {
         mainWidget->SetTextContentByController(controllerType);
         mainWidget->SetInteractText(1.0f);
@@ -379,7 +381,7 @@ void ABaseCharacter::GetActorToInteractInTheWorld()
         if(actorInSight && actorInSight->ActorHasTag(TagDestroyableActor))
         {
             mainWidget->SetCrossHairColor(FLinearColor::Red);
-        }else if(actorInSight->ActorHasTag(TagPickableActor))
+        }else if(actorInSight->ActorHasTag(TagTakeableActor))
         {
             mainWidget->SetCrossHairColor(FLinearColor::Green);
         }
@@ -416,6 +418,36 @@ AActor* ABaseCharacter::ActorTargetByLineTrace(FHitResult& result, float& range)
     }
 
     return nullptr;
+
+}
+
+// Method that interct with BaseTakeable class, add value into players inventory variables, this depends on the Takeable enum.
+void ABaseCharacter::TakeObject()
+{
+    if(ensure(pickableActor))// This ensure that the actor is pending to kill.
+    {
+        takeableType = pickableActor->GetTypeOfTakeable();
+        switch (takeableType)
+        {
+            case ETakeableType::BATTERY:
+            batteryQuantity += pickableActor->GetQuanityOfTakeable();
+            UE_LOG(LogTemp, Display, TEXT("batteryQuantity: %i"), batteryQuantity);
+            break;
+
+            case ETakeableType::THROWABLE:
+            thowableQuantity += pickableActor->GetQuanityOfTakeable();
+            UE_LOG(LogTemp, Display, TEXT("thowableQuantity: %i"), thowableQuantity);
+            break;
+        
+        default:
+            break;
+        }
+
+        pickableActor->DestroyTakeable();
+    }else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("No takeable Actor in sight."));
+    }
 
 }
 

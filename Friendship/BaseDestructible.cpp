@@ -13,9 +13,6 @@ ABaseDestructible::ABaseDestructible()
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(RootComponent);
 
-	Capsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule"));
-	Capsule->SetupAttachment(Mesh);
-
 }
 
 // Called when the game starts or when spawned

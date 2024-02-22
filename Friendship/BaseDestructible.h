@@ -32,9 +32,6 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Actor Mesh", meta = (AllowPrivateAccess))
 	UStaticMeshComponent* Mesh;
 
-	UPROPERTY(EditAnywhere, Category = "Actor Capsule", meta = (AllowPrivateAccess))
-	class UCapsuleComponent* Capsule;
-
 	// Value that represents the total resistance or 'life' amount of the actor.
 	UPROPERTY(EditAnywhere, Category = "Actor Resistance", meta = (AllowPrivateAccess))
 	float resistance = 5.0f;

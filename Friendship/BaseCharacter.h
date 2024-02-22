@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "BaseTakeable.h"
 #include "BaseCharacter.generated.h"
 
 // ENUM used to determine the controller of the player, this will change the interaction text on mainWidget.
@@ -160,17 +161,30 @@ private:
 	void GetActorToInteractInTheWorld();
 	// Method that return and interact with the actors in the world.
 	AActor* ActorTargetByLineTrace(FHitResult& result, float& range);
-	AActor* pickableActor;
 	AActor* actorInSight;
+
+	// Method that interct with BaseTakeable class, add value into players inventory variables, this depends on the Takeable enum.
+	void TakeObject();
+	ABaseTakeable* pickableActor;
 	
 	FHitResult Hit;
 	
 	// Variables of controll, determine the kind of interanction of an actor in the world.
 	FName TagDestroyableActor = FName("Destroy");
-	FName TagPickableActor = FName("Pick");
+	FName TagTakeableActor = FName("Takeable");
 
 	// Control variable, keeps track of aiming state.
 	bool isAiming;
+
+	////////////////////////////////////////////// INVENTORY SECTION //////////////////////////////////////////////
+	// This section contains properties and methods related to character inventory.
+	UPROPERTY(EditAnywhere, Category = "Character Inventory", meta = (AllowPrivateAccess))
+	int batteryQuantity;
+
+	UPROPERTY(EditAnywhere, Category = "Character Inventory", meta = (AllowPrivateAccess))
+	int thowableQuantity;
+
+	ETakeableType takeableType;
 
 	////////////////////////////////////////////// LANTERN SECTION //////////////////////////////////////////////
 	// This section contains properties and methods related to character lantern mechanic.
