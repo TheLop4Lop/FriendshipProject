@@ -18,6 +18,7 @@ void UMainUIWidget::NativeConstruct()
         anxietyBar->SetPercent(Zero);
         SetAnxietyBarOpacity(Zero);
         SetCrossHairOpacity(Zero);
+        SetDialogText(Zero, "");
         SetInteractText(Zero);
     }else
     {
@@ -88,7 +89,7 @@ void UMainUIWidget::SetTextContentByController(EInputControllerType controllerTy
     switch(controllerType)
     {
         case EInputControllerType::CONTROLLER_CONTROLLER:
-            updateText = TEXT("Press '■' to take.");
+            updateText = TEXT("Press 'X' to take.");
             interacText->SetText(FText::FromString(updateText));
             break;
         
@@ -127,9 +128,16 @@ void UMainUIWidget::UpdateFlashlight(float value)
 
 }
 
-// Set the opacity, this depends if character is using flashlight or not.
+// Method to control text, indicate the player an event that is happening in the gameplay.
 void UMainUIWidget::SetFlashlightBarOpacity(float opacity)
 {
     flashlightBar->SetRenderOpacity(FMath::FInterpTo(opacity, anxietyBar->RenderOpacity, GetWorld()->GetDeltaSeconds(), 0.01f));
+
+}
+
+void UMainUIWidget::SetDialogText(float opacity, FString dialog)
+{
+    dialogText->SetRenderOpacity(FMath::FInterpTo(opacity, anxietyBar->RenderOpacity, GetWorld()->GetDeltaSeconds(), 0.01f));
+    dialogText->SetText(FText::FromString(dialog));
 
 }

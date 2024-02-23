@@ -214,6 +214,7 @@ private:
 
 	// Method that manage lantern's battery
 	void UseLanternBattery();
+	void NewBatteryOnFlashlight();
 
 	bool isLanternOn;
 

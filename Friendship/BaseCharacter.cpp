@@ -89,6 +89,7 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
         InputComponent->BindAction(TEXT("Lantern"), EInputEvent::IE_Released, this, &ABaseCharacter::LanternOFF);
 
         InputComponent->BindAction(TEXT("Take"), EInputEvent::IE_Pressed, this, &ABaseCharacter::TakeObject);
+        InputComponent->BindAction(TEXT("Recharge"), EInputEvent::IE_Pressed, this, &ABaseCharacter::NewBatteryOnFlashlight);
 	}
 
 }
@@ -505,6 +506,31 @@ void ABaseCharacter::UseLanternBattery()
             currentBatteryAmount = Zero;
             mainWidget->SetFlashlightBarOpacity(Zero);
         }
+    }
+
+}
+
+void ABaseCharacter::NewBatteryOnFlashlight()
+{
+    if(!isLanternOn && batteryQuantity > 0 && currentBatteryAmount == Zero)
+    {
+        currentBatteryAmount = FMath::RandRange((maxBatteryAmount/2), maxBatteryAmount);
+        return;
+    }
+    
+    FString dialog;
+    (batteryQuantity > 0 && currentBatteryAmount != Zero) ? dialog = "I still have some battery left." : dialog = "I don't have another battery.";
+
+    if(mainWidget)
+    {
+        mainWidget->SetDialogText(1.0f, dialog);
+        FTimerDelegate dialogTimer;
+        dialogTimer.BindLambda([this]() 
+        {
+            mainWidget->SetDialogText(Zero, "");
+        });
+        
+        GetWorldTimerManager().SetTimer(timeHandleFlashLight, dialogTimer, 3.0f, false);
     }
 
 }

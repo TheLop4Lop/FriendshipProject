@@ -39,6 +39,9 @@ public:
 	// Set the opacity, this depends if character is using flashlight or not.
 	void SetFlashlightBarOpacity(float opacity);
 
+	// Method to control text, indicate the player an event that is happening in the gameplay.
+	void SetDialogText(float opacity, FString dialog);
+
 private:
 	////////////////////////////////////////////// PROPERTIES SECTION //////////////////////////////////////////////
 	// This section contains properties related to widget mechanics.
@@ -63,5 +66,8 @@ private:
 
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UProgressBar* flashlightBar;
+
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UTextBlock* dialogText;
 
 };
