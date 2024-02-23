@@ -70,4 +70,10 @@ private:
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UTextBlock* dialogText;
 
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UBackgroundBlur* backBlur;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anxiey Blur", meta = (AllowPrivateAccess))
+	float blurRate = 3.5f;
+	
 };

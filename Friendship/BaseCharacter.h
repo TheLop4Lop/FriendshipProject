@@ -152,6 +152,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Character Pick", meta = (AllowPrivateAccess))
 	float pickRange = 80.0f;
 
+	UPROPERTY(EditAnywhere, Category = "Character Lartern", meta = (AllowPrivateAccess))
+	float dialogDuration = 3.0f;
+
 	// Methods that manage the conditons to aim, this calls a Widget and determine conditions to damage actors.
 	void Aim();
 	void StopAim();
@@ -169,6 +172,9 @@ private:
 	
 	FHitResult Hit;
 	
+	// Calls mainWidget to add a dialog, depends on world interaction or mechanic.
+	void SituationDialog(FString dialog);
+
 	// Variables of controll, determine the kind of interanction of an actor in the world.
 	FName TagDestroyableActor = FName("Destroy");
 	FName TagTakeableActor = FName("Takeable");
@@ -207,6 +213,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Character Lartern", meta = (AllowPrivateAccess))
 	float currentBatteryAmount = 0.0f;
 
+	UPROPERTY(EditAnywhere, Category = "Character Lartern", meta = (AllowPrivateAccess))
+	float rechargeDelay = 2.5f;
+
 	// Methods that manage the lantern state.
 	void LanternON();
 	void LanternOFF();
@@ -219,5 +228,6 @@ private:
 	bool isLanternOn;
 
 	FTimerHandle timeHandleFlashLight;
+	FTimerHandle timeFlashLightRecharge;
 
 };

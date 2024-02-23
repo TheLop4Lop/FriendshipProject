@@ -425,7 +425,7 @@ AActor* ABaseCharacter::ActorTargetByLineTrace(FHitResult& result, float& range)
 // Method that interct with BaseTakeable class, add value into players inventory variables, this depends on the Takeable enum.
 void ABaseCharacter::TakeObject()
 {
-    if(ensure(pickableActor))// This ensure that the actor is pending to kill.
+    if(pickableActor)
     {
         takeableType = pickableActor->GetTypeOfTakeable();
         switch (takeableType)
@@ -448,6 +448,23 @@ void ABaseCharacter::TakeObject()
     }else
     {
         UE_LOG(LogTemp, Warning, TEXT("No takeable Actor in sight."));
+    }
+
+}
+
+// Calls mainWidget to add a dialog, depends on world interaction or mechanic.
+void ABaseCharacter::SituationDialog(FString dialog)
+{
+    if(mainWidget)
+    {
+        mainWidget->SetDialogText(1.0f, dialog);
+        FTimerDelegate dialogTimer;
+        dialogTimer.BindLambda([this]() 
+        {
+            mainWidget->SetDialogText(Zero, "");
+        });
+        
+        GetWorldTimerManager().SetTimer(timeFlashLightRecharge, dialogTimer, dialogDuration, false);
     }
 
 }
@@ -512,25 +529,20 @@ void ABaseCharacter::UseLanternBattery()
 
 void ABaseCharacter::NewBatteryOnFlashlight()
 {
+    LanternOFF();
     if(!isLanternOn && batteryQuantity > 0 && currentBatteryAmount == Zero)
     {
-        currentBatteryAmount = FMath::RandRange((maxBatteryAmount/2), maxBatteryAmount);
+        FTimerDelegate rechargeTimer;
+        rechargeTimer.BindLambda([this](){
+            currentBatteryAmount = FMath::RandRange((maxBatteryAmount/2), maxBatteryAmount);
+        });
+        GetWorldTimerManager().SetTimer(timeFlashLightRecharge, rechargeTimer, rechargeDelay, false);
+
         return;
     }
     
     FString dialog;
     (batteryQuantity > 0 && currentBatteryAmount != Zero) ? dialog = "I still have some battery left." : dialog = "I don't have another battery.";
-
-    if(mainWidget)
-    {
-        mainWidget->SetDialogText(1.0f, dialog);
-        FTimerDelegate dialogTimer;
-        dialogTimer.BindLambda([this]() 
-        {
-            mainWidget->SetDialogText(Zero, "");
-        });
-        
-        GetWorldTimerManager().SetTimer(timeHandleFlashLight, dialogTimer, 3.0f, false);
-    }
+    SituationDialog(dialog);
 
 }

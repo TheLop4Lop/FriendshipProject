@@ -2,6 +2,7 @@
 
 
 #include "MainUIWidget.h"
+#include "Components/BackgroundBlur.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "Components/Image.h"
@@ -30,10 +31,11 @@ void UMainUIWidget::NativeConstruct()
 // Method to control Bar and text indicator, helps the player know the quanity of anxiety while playing.
 void UMainUIWidget::UpdateAnxiety(float value)
 {
-    if(anxietyBar)
+    if(anxietyBar && backBlur)
     {
         float ClampedValue = FMath::Clamp(value, 0.0f, 1.0f);
         anxietyBar->SetPercent(ClampedValue);
+        backBlur->SetBlurStrength(value * blurRate);
     }else
     {
         UE_LOG(LogTemp, Error, TEXT("No anxietyBar found in WidgetBlueprint"));
