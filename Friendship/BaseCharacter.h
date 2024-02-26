@@ -49,6 +49,13 @@ public:
 	// Method that modify the quantity of MAX ansiety, this change with Darkness or another anxiety mechanic.
 	void ProportionalAnxietyHandle(float newStamina);
 
+	// Methods that handle in public increace and decreace anxiety on TriggerLuminare Class.
+	void IncreaseAnxietyOnCharacter();
+	void DecreaseAnxietyOnCharacter();
+	float GetAnxietyPeriod();
+	float GetAnxietyLevel();
+	bool isCharacterSptinting();
+
 private:
 	class ABaseCharacterController* characterController;
 
@@ -139,7 +146,6 @@ private:
 	void ReduceAnxiety();
 
 	// Movement Control bools, this controls if anxiety is triggered by sprinting.
-	bool isMoving = false;
 	bool isSprinting;
 
 	FTimerHandle timeHandle;

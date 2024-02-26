@@ -118,18 +118,28 @@ void ABaseCharacter::SetWidgetInteractionClass()
 //Methods that control the speed in of the character movement.
 void ABaseCharacter::Sprint()
 {
-    GetCharacterMovement()->MaxWalkSpeed = FMath::FInterpTo(SprintSpeed, WalkSpeed, GetWorld()->DeltaTimeSeconds, InterpMin);
-    isSprinting = true;
-    GetWorldTimerManager().SetTimer(timeHandle, this, &ABaseCharacter::IncreaseAnxiety, anxietyPeriod, isSprinting);
-	
+    if(GetCharacterMovement()->Velocity.SizeSquared() > 0)
+    {
+        GetCharacterMovement()->MaxWalkSpeed = FMath::FInterpTo(SprintSpeed, WalkSpeed, GetWorld()->DeltaTimeSeconds, InterpMin);
+        isSprinting = true;
+
+        GetWorldTimerManager().ClearTimer(timeHandle);
+        GetWorldTimerManager().SetTimer(timeHandle, this, &ABaseCharacter::IncreaseAnxiety, anxietyPeriod, isSprinting);
+    }
+
 }
 
-void ABaseCharacter::Walk()
+void ABaseCharacter::Walk() // if(anxietyLevel == Zero) return; 
 {
-	GetCharacterMovement()->MaxWalkSpeed = FMath::FInterpTo(WalkSpeed, SprintSpeed, GetWorld()->DeltaTimeSeconds, InterpMax);
-    isSprinting = false;
-    GetWorldTimerManager().SetTimer(timeHandle, this, &ABaseCharacter::ReduceAnxiety, anxietyPeriod, !isSprinting);
+    if(anxietyLevel != Zero)
+    {
+        GetCharacterMovement()->MaxWalkSpeed = FMath::FInterpTo(WalkSpeed, SprintSpeed, GetWorld()->DeltaTimeSeconds, InterpMax);
+        isSprinting = false;
 
+        GetWorldTimerManager().ClearTimer(timeHandle);
+        GetWorldTimerManager().SetTimer(timeHandle, this, &ABaseCharacter::ReduceAnxiety, anxietyPeriod, !isSprinting);
+    }
+	
 }
 
 //Methods that controll the Forward or Rigth direction, this movement depends on the funtion pointer.
@@ -259,8 +269,6 @@ void ABaseCharacter::SwapMovement()
 // Methods than control the characters Anxiety
 void ABaseCharacter::IncreaseAnxiety()
 {
-    if(!(GetCharacterMovement()->Velocity.SizeSquared() > 0)) return;
-
     if(anxietyLevel < MaxAnsiety)
     {
         anxietyLevel += anxietyAmount;
@@ -281,8 +289,6 @@ void ABaseCharacter::IncreaseAnxiety()
 
 void ABaseCharacter::ReduceAnxiety()
 {
-    if(anxietyLevel == Zero) return; 
-
     if(anxietyLevel > Zero)
     {
         anxietyLevel -= anxietyAmount;
@@ -310,6 +316,42 @@ void ABaseCharacter::ProportionalAnxietyHandle(float newStamina)
     float scalingFactor = maxStaminaByAnxiety/newStamina;
     anxietyPeriod = maxAnxietyPeriod/scalingFactor;
     anxietyAmount = ((anxietyPeriod * 100.0f)/newStamina);
+
+}
+
+// Methods that handle in public increace and decreace anxiety on TriggerLuminare Class.
+void ABaseCharacter::IncreaseAnxietyOnCharacter()
+{
+    GetWorldTimerManager().ClearTimer(timeHandle);
+    IncreaseAnxiety();
+
+}
+
+void ABaseCharacter::DecreaseAnxietyOnCharacter()
+{
+    if(!isSprinting)
+    {
+        GetWorldTimerManager().ClearTimer(timeHandle);
+        ReduceAnxiety();
+    }
+
+}
+
+float ABaseCharacter::GetAnxietyPeriod()
+{
+    return anxietyPeriod;
+
+}
+
+float ABaseCharacter::GetAnxietyLevel()
+{
+    return anxietyLevel;
+
+}
+
+bool ABaseCharacter::isCharacterSptinting()
+{
+    return isSprinting;
 
 }
 
@@ -353,7 +395,6 @@ void ABaseCharacter::ThrowProjectile()
             {
                 FPointDamageEvent DamageEven(2.0, Hit, actorInSight->GetActorLocation(), nullptr);
                 actorInSight->TakeDamage(2.0, DamageEven, characterController, this);
-                UE_LOG(LogTemp, Display, TEXT("HAAY ME DUELE"));
             }
         }else
         {
