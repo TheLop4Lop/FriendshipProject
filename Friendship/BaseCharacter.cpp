@@ -411,7 +411,7 @@ void ABaseCharacter::GetActorToInteractInTheWorld()
 {
     pickableActor = Cast<ABaseTakeable>(ActorTargetByLineTrace(Hit, pickRange));
     currentDoor = Cast<ABaseDoor>(ActorTargetByLineTrace(Hit, pickRange));
-    if(pickableActor && pickableActor->ActorHasTag(TagTakeableActor))
+    if(pickableActor && pickableActor->ActorHasTag(TagTakeableActor) || currentDoor && !currentDoor->IsDoorOpen())
     {
         mainWidget->SetTextContentByController(controllerType);
         mainWidget->SetInteractText(1.0f);

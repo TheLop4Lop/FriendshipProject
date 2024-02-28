@@ -23,15 +23,30 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	bool IsDoorOpen();
 	void TryAccessToDoor(class ABaseCharacter* character);
 
 protected:
 	////////////////////////////////////////////// Properties SECTION //////////////////////////////////////////////
 	// This section contains properties related to actor.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Actor Root")
+    class USceneComponent* doorRootComponent;
+
 	UPROPERTY(EditAnywhere, Category = "Actor Mesh", meta = (AllowPrivateAccess))
-	UStaticMeshComponent* mesh;
+	UStaticMeshComponent* meshDoor;
+
+	UPROPERTY(EditAnywhere, Category = "Actor Mesh", meta = (AllowPrivateAccess))
+	UStaticMeshComponent* meshPivot;
 
 	UPROPERTY(EditAnywhere, category = "Unlock Door", meta = (AllowPrivateAccess))
 	FName keyToUnlock;
+
+	UPROPERTY(EditAnywhere, category = "Unlock Door", meta = (AllowPrivateAccess))
+	bool isOpen;
+
+	UPROPERTY(EditAnywhere, Category = "Actor Mesh", meta = (AllowPrivateAccess))
+	class UPhysicsConstraintComponent* physicsConstrain;
+
+	void OpenDoor();
 
 };
