@@ -56,6 +56,12 @@ public:
 	float GetAnxietyLevel();
 	bool isCharacterSptinting();
 
+	// Calls mainWidget to add a dialog, depends on world interaction or mechanic.
+	void SituationDialog(FString dialog);
+
+	// Method that handles keys inventory, checks if player has the correct key.
+	bool HasKeyToOpenDoor(FName door);
+
 private:
 	class ABaseCharacterController* characterController;
 
@@ -175,11 +181,9 @@ private:
 	// Method that interct with BaseTakeable class, add value into players inventory variables, this depends on the Takeable enum.
 	void TakeObject();
 	ABaseTakeable* pickableActor;
+	class ABaseDoor* currentDoor;
 	
 	FHitResult Hit;
-	
-	// Calls mainWidget to add a dialog, depends on world interaction or mechanic.
-	void SituationDialog(FString dialog);
 
 	// Variables of controll, determine the kind of interanction of an actor in the world.
 	FName TagDestroyableActor = FName("Destroy");
@@ -195,6 +199,11 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Character Inventory", meta = (AllowPrivateAccess))
 	int thowableQuantity;
+
+	UPROPERTY(EditAnywhere, Category = "Character Inventory", meta = (AllowPrivateAccess))
+	int keyQuantity;
+
+	TArray<FName> keyTags;
 
 	ETakeableType takeableType;
 

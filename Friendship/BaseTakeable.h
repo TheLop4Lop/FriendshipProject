@@ -10,6 +10,7 @@
 UENUM(BlueprintType)
 enum class ETakeableType : uint8
 {
+	KEY,
 	BATTERY,
 	THROWABLE
 };
@@ -18,7 +19,7 @@ UCLASS()
 class FRIENDSHIP_API ABaseTakeable : public AActor
 {
 	GENERATED_BODY()
-	
+
 public:	
 	// Sets default values for this actor's properties
 	ABaseTakeable();

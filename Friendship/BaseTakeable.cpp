@@ -43,11 +43,15 @@ int ABaseTakeable::GetQuanityOfTakeable()
 {
 	switch (takeableType)
 	{
+		case ETakeableType::KEY:
+            return minQuantity;
+            break;
+
         case ETakeableType::BATTERY:
             return minQuantity;
             break;
 
-            case ETakeableType::THROWABLE:
+		case ETakeableType::THROWABLE:
             return FMath::RandRange(minQuantity, maxQuantity);
             break;
         

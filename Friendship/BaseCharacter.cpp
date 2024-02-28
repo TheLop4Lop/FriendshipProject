@@ -7,6 +7,8 @@
 #include "Camera/CameraComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "MainUIWidget.h"
+#include "TakeableKey.h"
+#include "BaseDoor.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
@@ -88,7 +90,7 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
         InputComponent->BindAction(TEXT("Lantern"), EInputEvent::IE_Pressed, this, &ABaseCharacter::LanternON);
         InputComponent->BindAction(TEXT("Lantern"), EInputEvent::IE_Released, this, &ABaseCharacter::LanternOFF);
 
-        InputComponent->BindAction(TEXT("Take"), EInputEvent::IE_Pressed, this, &ABaseCharacter::TakeObject);
+        InputComponent->BindAction(TEXT("Interact"), EInputEvent::IE_Pressed, this, &ABaseCharacter::TakeObject);
         InputComponent->BindAction(TEXT("Recharge"), EInputEvent::IE_Pressed, this, &ABaseCharacter::NewBatteryOnFlashlight);
 	}
 
@@ -408,6 +410,7 @@ void ABaseCharacter::ThrowProjectile()
 void ABaseCharacter::GetActorToInteractInTheWorld()
 {
     pickableActor = Cast<ABaseTakeable>(ActorTargetByLineTrace(Hit, pickRange));
+    currentDoor = Cast<ABaseDoor>(ActorTargetByLineTrace(Hit, pickRange));
     if(pickableActor && pickableActor->ActorHasTag(TagTakeableActor))
     {
         mainWidget->SetTextContentByController(controllerType);
@@ -469,8 +472,18 @@ void ABaseCharacter::TakeObject()
     if(pickableActor)
     {
         takeableType = pickableActor->GetTypeOfTakeable();
+        ATakeableKey* key = Cast<ATakeableKey>(pickableActor);
         switch (takeableType)
         {
+            case ETakeableType::KEY:
+            if(key)
+            {
+                keyQuantity += key->GetQuanityOfTakeable();
+                keyTags.Add(key->GetKeyNameUnlockDoor());
+                UE_LOG(LogTemp, Display, TEXT("keyQuantity: %i"), keyQuantity);
+            }
+            break;
+
             case ETakeableType::BATTERY:
             batteryQuantity += pickableActor->GetQuanityOfTakeable();
             UE_LOG(LogTemp, Display, TEXT("batteryQuantity: %i"), batteryQuantity);
@@ -486,9 +499,12 @@ void ABaseCharacter::TakeObject()
         }
 
         pickableActor->DestroyTakeable();
+    }else if(currentDoor)
+    {
+       currentDoor->TryAccessToDoor(this);
     }else
     {
-        UE_LOG(LogTemp, Warning, TEXT("No takeable Actor in sight."));
+         UE_LOG(LogTemp, Warning, TEXT("No Actor to interact in sight."));
     }
 
 }
@@ -507,6 +523,23 @@ void ABaseCharacter::SituationDialog(FString dialog)
         
         GetWorldTimerManager().SetTimer(timeFlashLightRecharge, dialogTimer, dialogDuration, false);
     }
+
+}
+
+////////////////////////////////////////////// INVENTORY SECTION //////////////////////////////////////////////
+// This section contains properties and methods related to character inventory.
+
+// Method that handles keys inventory, checks if player has the correct key, called from BaseDoor class.
+bool ABaseCharacter::HasKeyToOpenDoor(FName door)
+{
+    for(FName singleKey : keyTags)
+    {
+        if(singleKey.IsEqual(door))
+        {
+            return true;
+        }
+    }
+    return false;
 
 }
 

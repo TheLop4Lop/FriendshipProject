@@ -91,17 +91,17 @@ void UMainUIWidget::SetTextContentByController(EInputControllerType controllerTy
     switch(controllerType)
     {
         case EInputControllerType::CONTROLLER_CONTROLLER:
-            updateText = TEXT("Press 'X' to take.");
+            updateText = TEXT("Press 'X' to interact.");
             interacText->SetText(FText::FromString(updateText));
             break;
         
         case EInputControllerType::KEYBOARD_CONTROLLER:
-            updateText = TEXT("Press 'E' to take.");
+            updateText = TEXT("Press 'E' to interact.");
             interacText->SetText(FText::FromString(updateText));
             break;
     
         case EInputControllerType::OCULUS_CONTROLLER:
-            updateText = TEXT("Grap to take.");
+            updateText = TEXT("Grap to interact.");
             interacText->SetText(FText::FromString(updateText));
             break;
         
