@@ -36,24 +36,17 @@ void ATriggerLuminaire::SetAnxietyFunctionality()
 {
     if(anxietyBox->IsOverlappingActor(character) && !isLightOn && doOnceTimer)
     {
+        character->SetConditionsToRelax(false);
         anxietyDelagate.BindLambda([this](){
             character->IncreaseAnxietyOnCharacter();
         });
 
         ManageCharacterOnTrigger();
         doOnceTimer = false;
-    }else if (!anxietyBox->IsOverlappingActor(character) && !character->isCharacterSptinting() && !doOnceTimer)
+    }else if (!anxietyBox->IsOverlappingActor(character) && !doOnceTimer)
     {
-        anxietyDelagate.BindLambda([this](){
-            if(character->GetAnxietyLevel() <= 0.0f)
-            {
-                GetWorldTimerManager().ClearTimer(anxietyTimer);
-            }
-
-            character->DecreaseAnxietyOnCharacter();
-        });
-
-        ManageCharacterOnTrigger();
+        GetWorldTimerManager().ClearTimer(anxietyTimer);
+        character->SetConditionsToRelax(true);
         doOnceTimer = true;
     }
 

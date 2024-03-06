@@ -42,6 +42,7 @@ void ABaseCharacter::BeginPlay()
 
     SetWidgetInteractionClass();
     SetLanternIntensity(Zero);
+    canRelax = true;
 
 }
 
@@ -57,6 +58,16 @@ void ABaseCharacter::Tick(float DeltaTime)
     {
         UE_LOG(LogTemp, Warning, TEXT("mainWidget is a NULL value, checkk Character Blueprint"));
     }
+
+    if(anxietyLevel != Zero && !isSprinting && canRelax && doOnceRelax)
+    {
+        GetWorldTimerManager().ClearTimer(timeHandle);
+        GetWorldTimerManager().SetTimer(timeHandle, this, &ABaseCharacter::ReduceAnxiety, anxietyPeriod, anxietyLevel != Zero);
+
+        doOnceRelax = false;
+    }
+
+    SetCameraActionMovement();
 
 }
 
@@ -131,15 +142,13 @@ void ABaseCharacter::Sprint()
 
 }
 
-void ABaseCharacter::Walk() // if(anxietyLevel == Zero) return; 
+void ABaseCharacter::Walk() 
 {
     if(anxietyLevel != Zero)
     {
         GetCharacterMovement()->MaxWalkSpeed = FMath::FInterpTo(WalkSpeed, SprintSpeed, GetWorld()->DeltaTimeSeconds, InterpMax);
         isSprinting = false;
-
-        GetWorldTimerManager().ClearTimer(timeHandle);
-        GetWorldTimerManager().SetTimer(timeHandle, this, &ABaseCharacter::ReduceAnxiety, anxietyPeriod, !isSprinting);
+        doOnceRelax = true;
     }
 	
 }
@@ -265,6 +274,24 @@ void ABaseCharacter::SwapMovement()
 
 }
 
+void ABaseCharacter::SetCameraActionMovement()
+{
+    if(characterController)
+    {
+        if(GetCharacterMovement()->Velocity.Size() < WalkSpeed/2)
+        {
+            characterController->SetCamerastateMovement(ECameraMovement::IDLE);
+        }else if(GetCharacterMovement()->Velocity.Size() < SprintSpeed - 100.0f && GetCharacterMovement()->Velocity.Size() >= WalkSpeed/2)
+        {
+            characterController->SetCamerastateMovement(ECameraMovement::WALKING);
+        }else
+        {
+            characterController->SetCamerastateMovement(ECameraMovement::SPRINTING);
+        }
+    }
+
+}
+
 ////////////////////////////////////////////// ANXIETY SECTION //////////////////////////////////////////////
 // This section contains properties and methods related to character anxiety mechanic.
 
@@ -329,13 +356,12 @@ void ABaseCharacter::IncreaseAnxietyOnCharacter()
 
 }
 
-void ABaseCharacter::DecreaseAnxietyOnCharacter()
+void ABaseCharacter::SetConditionsToRelax(bool relax)
 {
-    if(!isSprinting)
-    {
-        GetWorldTimerManager().ClearTimer(timeHandle);
-        ReduceAnxiety();
-    }
+    canRelax = relax;
+    UE_LOG(LogTemp, Display, TEXT("relax: %s"), canRelax? TEXT("true") : TEXT("false"));
+    doOnceRelax = canRelax;
+    UE_LOG(LogTemp, Display, TEXT("doOnce: %s"), doOnceRelax? TEXT("true") : TEXT("false"));
 
 }
 

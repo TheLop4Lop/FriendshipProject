@@ -6,6 +6,14 @@
 #include "GameFramework/PlayerController.h"
 #include "BaseCharacterController.generated.h"
 
+UENUM(BlueprintType)
+enum class ECameraMovement : uint8
+{
+	IDLE,
+	WALKING,
+	SPRINTING
+};
+
 /**
  * 
  */
@@ -14,10 +22,26 @@ class FRIENDSHIP_API ABaseCharacterController : public APlayerController
 {
 	GENERATED_BODY()
 
+public:
+	void SetCamerastateMovement(ECameraMovement movement);
+
 protected:
 	APawn* Pawn;
 
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
+
+	UPROPERTY(EditAnywhere, Category = "Camera Shake Movement", meta = (AllowPrivateAccess))
+	TSubclassOf<UCameraShakeBase> idle;
+
+	UPROPERTY(EditAnywhere, Category = "Camera Shake Movement", meta = (AllowPrivateAccess))
+	TSubclassOf<UCameraShakeBase> walking;
+
+	UPROPERTY(EditAnywhere, Category = "Camera Shake Movement", meta = (AllowPrivateAccess))
+	TSubclassOf<UCameraShakeBase> sprint;
+
+	TSubclassOf<UCameraShakeBase>* cameraState;
+
+	void StartCameraMovement();
 
 };

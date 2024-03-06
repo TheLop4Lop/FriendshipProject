@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "BaseCharacterController.h"
 #include "BaseTakeable.h"
 #include "BaseCharacter.generated.h"
 
@@ -51,7 +52,7 @@ public:
 
 	// Methods that handle in public increace and decreace anxiety on TriggerLuminare Class.
 	void IncreaseAnxietyOnCharacter();
-	void DecreaseAnxietyOnCharacter();
+	void SetConditionsToRelax(bool relax);
 	float GetAnxietyPeriod();
 	float GetAnxietyLevel();
 	bool isCharacterSptinting();
@@ -124,6 +125,8 @@ private:
 	void SetUsingKeyBoard();
 	void SetUsingController(float value);
 
+	void SetCameraActionMovement();
+
 	// Control Swap state.
 	bool controlSwap = false;
 
@@ -153,6 +156,9 @@ private:
 
 	// Movement Control bools, this controls if anxiety is triggered by sprinting.
 	bool isSprinting;
+	bool canRelax;
+
+	bool doOnceRelax;
 
 	FTimerHandle timeHandle;
 

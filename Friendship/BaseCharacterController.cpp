@@ -19,3 +19,41 @@ void ABaseCharacterController::SetupInputComponent()
     Super::SetupInputComponent();
 
 }
+
+void ABaseCharacterController::SetCamerastateMovement(ECameraMovement movement)
+{
+    if(idle && walking && sprint)
+    {
+        switch(movement)
+        {
+            case ECameraMovement::IDLE:
+                cameraState = &idle;
+                break;
+            case ECameraMovement::WALKING:
+                cameraState = &walking;
+                break;
+            case ECameraMovement::SPRINTING:
+                cameraState = &sprint;
+                break;
+
+            default:
+                cameraState = nullptr;
+                break;
+        }
+    }else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("No Movement Camera Class defined!"));
+    }
+
+    StartCameraMovement();
+
+}
+
+void ABaseCharacterController::StartCameraMovement()
+{
+    if(cameraState)
+    {
+        ClientStartCameraShake(*cameraState);
+    }
+
+}
