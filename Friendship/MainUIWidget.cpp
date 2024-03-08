@@ -17,6 +17,7 @@ void UMainUIWidget::NativeConstruct()
     {
         SetFlashlightBarOpacity(Zero);
         anxietyBar->SetPercent(Zero);
+        SetAnxietyNoiseOpacity(Zero);
         SetAnxietyBarOpacity(Zero);
         SetCrossHairOpacity(Zero);
         SetDialogText(Zero, "");
@@ -36,6 +37,12 @@ void UMainUIWidget::UpdateAnxiety(float value)
         float ClampedValue = FMath::Clamp(value, 0.0f, 1.0f);
         anxietyBar->SetPercent(ClampedValue);
         backBlur->SetBlurStrength(value * blurRate);
+        if(value >= 0.25)
+        {
+            float noiseClampedValue = FMath::Clamp(value, 0.0f, 1.0f);
+            float adjustedOpacity = FMath::Max(noiseClampedValue - 0.25f, 0.0f) * 1.4f;
+            SetAnxietyNoiseOpacity(adjustedOpacity);
+        }
     }else
     {
         UE_LOG(LogTemp, Error, TEXT("No anxietyBar found in WidgetBlueprint"));
@@ -54,6 +61,19 @@ void UMainUIWidget::SetAnxietyBarOpacity(float opacity)
     }else
     {
         UE_LOG(LogTemp, Error, TEXT("No anxietyComponents found in WidgetBlueprint to update Opacity."));
+    }
+
+}
+
+// Set the opacity, this depends if character is aiming ot not.
+void UMainUIWidget::SetAnxietyNoiseOpacity(float opacity)
+{
+    if(anxietyNoise)
+    {
+        anxietyNoise->SetRenderOpacity(FMath::FInterpTo(opacity, anxietyBar->RenderOpacity, GetWorld()->GetDeltaSeconds(), 0.01f));
+    }else
+    {
+        UE_LOG(LogTemp, Error, TEXT("No Anxiety Noise found in WidgetBlueprint to update Opacity."));
     }
 
 }

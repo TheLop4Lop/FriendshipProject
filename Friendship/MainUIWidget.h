@@ -23,6 +23,7 @@ public:
 	void UpdateAnxiety(float value);
 	// Set the opacity, this depends if character is sprinting ot not.
 	void SetAnxietyBarOpacity(float opacity);
+	void SetAnxietyNoiseOpacity(float opacity);
 
 	// Set the opacity, this depends if character is aiming or not.
 	void SetCrossHairOpacity(float opacity);
@@ -72,6 +73,9 @@ private:
 
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UBackgroundBlur* backBlur;
+
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UImage* anxietyNoise;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anxiey Blur", meta = (AllowPrivateAccess))
 	float blurRate = 3.5f;

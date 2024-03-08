@@ -5,6 +5,7 @@
 #include "Components/SpotLightComponent.h"
 #include "BaseCharacterController.h"
 #include "Camera/CameraComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Blueprint/UserWidget.h"
 #include "MainUIWidget.h"
 #include "TakeableKey.h"
@@ -30,7 +31,7 @@ void ABaseCharacter::BeginPlay()
 	Super::BeginPlay();
     characterController = Cast<ABaseCharacterController>(GetController());
 
-	ProportionalAnxietyHandle(staminaByAnxiety);
+	ProportionalAnxietyHandle(maxStaminaByAnxiety);
 	movementFunction1 = &ABaseCharacter::MoveForward;
     movementFunction2 = &ABaseCharacter::MoveRigth;
 
@@ -51,23 +52,11 @@ void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-    if(mainWidget)
-    {  
-        GetActorToInteractInTheWorld();
-    }else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("mainWidget is a NULL value, checkk Character Blueprint"));
-    }
-
-    if(anxietyLevel != Zero && !isSprinting && canRelax && doOnceRelax)
-    {
-        GetWorldTimerManager().ClearTimer(timeHandle);
-        GetWorldTimerManager().SetTimer(timeHandle, this, &ABaseCharacter::ReduceAnxiety, anxietyPeriod, anxietyLevel != Zero);
-
-        doOnceRelax = false;
-    }
-
+    SetGetActorToInteractInTheWorldWidget();
     SetCameraActionMovement();
+
+    SetReduceAnxiety();
+    SetHeartSound();
 
 }
 
@@ -109,6 +98,8 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 ////////////////////////////////////////////// WIDGET SECTION //////////////////////////////////////////////
 // This section contains properties and methods related to character's Widget.
+
+// Method that implements Widget Class.
 void ABaseCharacter::SetWidgetInteractionClass()
 {
     if(characterController && mainWidgetClass)
@@ -128,10 +119,10 @@ void ABaseCharacter::SetWidgetInteractionClass()
 ////////////////////////////////////////////// MOVEMENT SECTION //////////////////////////////////////////////
 // This section contains properties and methods related to character movement and control.
 
-//Methods that control the speed in of the character movement.
+// Method that manage the spring mechanic.
 void ABaseCharacter::Sprint()
 {
-    if(GetCharacterMovement()->Velocity.SizeSquared() > 0)
+    if(GetCharacterMovement()->Velocity.SizeSquared() > Zero)
     {
         GetCharacterMovement()->MaxWalkSpeed = FMath::FInterpTo(SprintSpeed, WalkSpeed, GetWorld()->DeltaTimeSeconds, InterpMin);
         isSprinting = true;
@@ -142,6 +133,7 @@ void ABaseCharacter::Sprint()
 
 }
 
+// Method that manage the walk mechanic.
 void ABaseCharacter::Walk() 
 {
     if(anxietyLevel != Zero)
@@ -163,6 +155,7 @@ void ABaseCharacter::HandleMovementInputAxis1(float value)
 
 }
 
+//Methods that controll the Forward or Rigth direction, this movement depends on the funtion pointer.
 void ABaseCharacter::HandleMovementInputAxis2(float value)
 {
     if(movementFunction2 != nullptr)
@@ -172,20 +165,21 @@ void ABaseCharacter::HandleMovementInputAxis2(float value)
 
 }
 
-//Movement methods.
+// Movement Forward method.
 void ABaseCharacter::MoveForward(float value)
 {
     AddMovementInput(GetActorForwardVector(), value);
 
 }
 
+// Movement Right method.
 void ABaseCharacter::MoveRigth(float value)
 {
     AddMovementInput(GetActorRightVector(), value);
 
 }
 
-//Methods that controll the look and turn, this movement depens on the function pointer.
+// Methods that controll the Forward or Rigth direction, this movement depends on the funtion pointer.
 void ABaseCharacter::HandleLookInputAxis1(float value)
 {
     if(lookFunction1 != nullptr)
@@ -195,6 +189,7 @@ void ABaseCharacter::HandleLookInputAxis1(float value)
 
 }
 
+// Methods that controll the Forward or Rigth direction, this movement depends on the funtion pointer.
 void ABaseCharacter::HandleLookInputAxis2(float value)
 {
     if(lookFunction2 != nullptr)
@@ -204,49 +199,53 @@ void ABaseCharacter::HandleLookInputAxis2(float value)
 
 }
 
-//Look and turn methods.
+// Look up Method.
 void ABaseCharacter::LookUp(float value)
 {
     AddControllerPitchInput(value);
 
 }
 
+// Turn Method.
 void ABaseCharacter::TurnRight(float value)
 {
 	AddControllerYawInput(value);
 
 }
 
-//Look and turn methods. ON CONTROLLER
+// Look up Method. ON CONTROLLER
 void ABaseCharacter::LookUpController(float value)
 {
     AddControllerPitchInput(value * (yAxisRate * GetWorld()->GetDeltaSeconds()));
 
 }
 
+// Turn Method. ON CONTROLLER
 void ABaseCharacter::TurnRightController(float value)
 {
 	AddControllerYawInput(value * (xAxisRate * GetWorld()->GetDeltaSeconds()));
 
 }
 
-// Methods used to define what kind of controller the player is usign.
+// Methods used to define keyboard controller. (This can be unimplemented)
 void ABaseCharacter::SetUsingKeyBoard()
 {
     controllerType = EInputControllerType::KEYBOARD_CONTROLLER;
 
 }
 
+// Methods used to define gamepad controller. (This can be unimplemented)
 void ABaseCharacter::SetUsingController(float value)
 {
-    if(value > 0.1f)
+    float minControllerRatio = 0.1f;
+    if(value > minControllerRatio)
     {
         controllerType = EInputControllerType::CONTROLLER_CONTROLLER;
     }
 
 }
 
-//Called when Max Anxiety is reached, it change the controller inputs.
+// Called when Max Anxiety is reached, it change the controller inputs.
 void ABaseCharacter::SwapMovement()
 {
     if(!controlSwap)
@@ -274,6 +273,7 @@ void ABaseCharacter::SwapMovement()
 
 }
 
+// Sets Camera animation by movement.
 void ABaseCharacter::SetCameraActionMovement()
 {
     if(characterController)
@@ -281,14 +281,28 @@ void ABaseCharacter::SetCameraActionMovement()
         if(GetCharacterMovement()->Velocity.Size() < WalkSpeed/2)
         {
             characterController->SetCamerastateMovement(ECameraMovement::IDLE);
-        }else if(GetCharacterMovement()->Velocity.Size() < SprintSpeed - 100.0f && GetCharacterMovement()->Velocity.Size() >= WalkSpeed/2)
+        }else if(GetCharacterMovement()->Velocity.Size() < SprintSpeed - MaxAnxiety && GetCharacterMovement()->Velocity.Size() >= WalkSpeed/2)
         {
             characterController->SetCamerastateMovement(ECameraMovement::WALKING);
-        }else
+            if(stepsSound && doOnceStep)
+            {
+                GetWorldTimerManager().SetTimer(timeStep, this, &ABaseCharacter::stepiStp, 0.40f, doOnceStep);
+                
+                doOnceStep = false;
+            }
+        }else if(isSprinting || anxietyLevel > MaxAnxiety/2)
         {
             characterController->SetCamerastateMovement(ECameraMovement::SPRINTING);
         }
     }
+
+}
+
+// Test function for steps functionality.
+void ABaseCharacter::stepiStp()
+{
+    UGameplayStatics::PlaySoundAtLocation(this, stepsSound, GetActorLocation());
+    doOnceStep = true;
 
 }
 
@@ -298,24 +312,39 @@ void ABaseCharacter::SetCameraActionMovement()
 // Methods than control the characters Anxiety
 void ABaseCharacter::IncreaseAnxiety()
 {
-    if(anxietyLevel < MaxAnsiety)
+    if(anxietyLevel < MaxAnxiety)
     {
         anxietyLevel += anxietyAmount;
         if(mainWidget)
         {
-            mainWidget->UpdateAnxiety(anxietyLevel/MaxAnsiety);
-            mainWidget->SetAnxietyBarOpacity(1.0f);
+            float opacityBar = 1.0f;
+            mainWidget->UpdateAnxiety(anxietyLevel/MaxAnxiety);
+            mainWidget->SetAnxietyBarOpacity(opacityBar);
         }else
         {
             UE_LOG(LogTemp, Warning, TEXT("NULL value on mainWidgetClass."));
         }
-    }else if(anxietyLevel >= MaxAnsiety)
+    }else if(anxietyLevel >= MaxAnxiety)
     {
-        anxietyLevel = MaxAnsiety;
+        anxietyLevel = MaxAnxiety;
     }
 
 }
 
+// Sets initial conditions to manage the reduction on anxiety.
+void ABaseCharacter::SetReduceAnxiety()
+{
+    if(anxietyLevel != Zero && !isSprinting && canRelax && doOnceRelax) // in a fuucntion
+    {
+        GetWorldTimerManager().ClearTimer(timeHandle);
+        GetWorldTimerManager().SetTimer(timeHandle, this, &ABaseCharacter::ReduceAnxiety, anxietyPeriod, anxietyLevel != Zero);
+
+        doOnceRelax = false;
+    }
+
+}
+
+// Methods than manage the anxiety reduction value.
 void ABaseCharacter::ReduceAnxiety()
 {
     if(anxietyLevel > Zero)
@@ -323,7 +352,7 @@ void ABaseCharacter::ReduceAnxiety()
         anxietyLevel -= anxietyAmount;
         if(mainWidget)
         {
-            mainWidget->UpdateAnxiety(anxietyLevel/MaxAnsiety);
+            mainWidget->UpdateAnxiety(anxietyLevel/MaxAnxiety);
         }else
         {
             UE_LOG(LogTemp, Warning, TEXT("NULL value on mainWidgetClass."));
@@ -344,7 +373,7 @@ void ABaseCharacter::ProportionalAnxietyHandle(float newStamina)
 {
     float scalingFactor = maxStaminaByAnxiety/newStamina;
     anxietyPeriod = maxAnxietyPeriod/scalingFactor;
-    anxietyAmount = ((anxietyPeriod * 100.0f)/newStamina);
+    anxietyAmount = ((anxietyPeriod * MaxAnxiety)/newStamina);
 
 }
 
@@ -356,30 +385,68 @@ void ABaseCharacter::IncreaseAnxietyOnCharacter()
 
 }
 
+// Change boolean condition values to access relax mechanic.
 void ABaseCharacter::SetConditionsToRelax(bool relax)
 {
     canRelax = relax;
-    UE_LOG(LogTemp, Display, TEXT("relax: %s"), canRelax? TEXT("true") : TEXT("false"));
     doOnceRelax = canRelax;
-    UE_LOG(LogTemp, Display, TEXT("doOnce: %s"), doOnceRelax? TEXT("true") : TEXT("false"));
 
 }
 
+// Returns the current anxiety period.
 float ABaseCharacter::GetAnxietyPeriod()
 {
     return anxietyPeriod;
 
 }
 
+// Returns the current anxiety level.
 float ABaseCharacter::GetAnxietyLevel()
 {
     return anxietyLevel;
 
 }
 
+// Returns wether or not the player is sprinting.
 bool ABaseCharacter::isCharacterSptinting()
 {
     return isSprinting;
+
+}
+
+// Sets initial condition to call heartbeat.
+void ABaseCharacter::SetHeartSound()
+{
+    if(anxietyLevel != Zero && doOnceHeart)
+    {
+        float minHeartValue = 1.0f;
+        float heartBPM = FMath::Clamp(this->heartSound->GetDuration()/((anxietyLevel/MaxAnxiety) * this->heartSound->GetDuration()), 
+                                        minHeartValue, this->heartSound->GetDuration());
+        
+        GetWorldTimerManager().ClearTimer(timeHeart);
+        GetWorldTimerManager().SetTimer(timeHeart, this, &ABaseCharacter::CheckAndPlayHeartSound, heartBPM, doOnceHeart);
+
+        doOnceHeart = false;
+    }
+
+}
+
+// Plays Heartbeat sound.
+void ABaseCharacter::CheckAndPlayHeartSound()
+{
+    if(heartSound)
+    {
+        float minHeartValue = 1.0f;
+        float heartVolume = anxietyLevel/MaxAnxiety;
+        float heartPitch = FMath::Clamp(((anxietyLevel/MaxAnxiety) * this->heartSound->GetDuration()), minHeartValue, this->heartSound->GetDuration());
+
+        UGameplayStatics::PlaySoundAtLocation(this, heartSound, GetActorLocation(), heartVolume, heartPitch);
+
+        doOnceHeart = true;
+    }else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("No Sound to play for heartSound!"));
+    }
 
 }
 
@@ -400,6 +467,7 @@ void ABaseCharacter::Aim()
 
 }
 
+// Stops aiming an removes the wigdet.
 void ABaseCharacter::StopAim()
 {
     isAiming = false;
@@ -413,16 +481,18 @@ void ABaseCharacter::StopAim()
 
 }
 
+// Generate linetrace collision to object (May be updated to spawn object).
 void ABaseCharacter::ThrowProjectile()
 {
     if(isAiming)
     {
+        float damageIn = 2.0; //This may change after implementing throable class.
         if(actorInSight)
         {
             if(actorInSight && actorInSight->ActorHasTag(TagDestroyableActor))
             {
-                FPointDamageEvent DamageEven(2.0, Hit, actorInSight->GetActorLocation(), nullptr);
-                actorInSight->TakeDamage(2.0, DamageEven, characterController, this);
+                FPointDamageEvent DamageEven(damageIn, Hit, actorInSight->GetActorLocation(), nullptr);
+                actorInSight->TakeDamage(damageIn, DamageEven, characterController, this);
             }
         }else
         {
@@ -432,15 +502,29 @@ void ABaseCharacter::ThrowProjectile()
 
 }
 
-// Method that change the properties of mainWidget, this to detemine the type of actor, if it can be destroyed or be picked.
+// Set GetActorToInteractInTheWorld function.
+void ABaseCharacter::SetGetActorToInteractInTheWorldWidget()
+{
+    if(mainWidget)
+    {  
+        GetActorToInteractInTheWorld();
+    }else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("mainWidget is a NULL value, checkk Character Blueprint"));
+    }
+
+}
+
+// Get the actor on player sight, this adds interaction on widget, depends of the type of object.
 void ABaseCharacter::GetActorToInteractInTheWorld()
 {
     pickableActor = Cast<ABaseTakeable>(ActorTargetByLineTrace(Hit, pickRange));
     currentDoor = Cast<ABaseDoor>(ActorTargetByLineTrace(Hit, pickRange));
     if(pickableActor && pickableActor->ActorHasTag(TagTakeableActor) || currentDoor && !currentDoor->IsDoorOpen())
     {
+        float opacityText = 1.0f;
         mainWidget->SetTextContentByController(controllerType);
-        mainWidget->SetInteractText(1.0f);
+        mainWidget->SetInteractText(opacityText);
     }else
     {
         mainWidget->SetInteractText(Zero);
@@ -479,7 +563,8 @@ AActor* ABaseCharacter::ActorTargetByLineTrace(FHitResult& result, float& range)
         UE_LOG(LogTemp, Warning, TEXT("NULL value on characterController."));
     }
 
-    FCollisionShape sphere = FCollisionShape::MakeSphere(0.5f);
+    float sphereRadius = 1.0f;
+    FCollisionShape sphere = FCollisionShape::MakeSphere(sphereRadius);
     FCollisionQueryParams params;
     params.AddIgnoredActor(this);
 
@@ -506,18 +591,15 @@ void ABaseCharacter::TakeObject()
             {
                 keyQuantity += key->GetQuanityOfTakeable();
                 keyTags.Add(key->GetKeyNameUnlockDoor());
-                UE_LOG(LogTemp, Display, TEXT("keyQuantity: %i"), keyQuantity);
             }
             break;
 
             case ETakeableType::BATTERY:
             batteryQuantity += pickableActor->GetQuanityOfTakeable();
-            UE_LOG(LogTemp, Display, TEXT("batteryQuantity: %i"), batteryQuantity);
             break;
 
             case ETakeableType::THROWABLE:
             thowableQuantity += pickableActor->GetQuanityOfTakeable();
-            UE_LOG(LogTemp, Display, TEXT("thowableQuantity: %i"), thowableQuantity);
             break;
         
         default:
@@ -540,7 +622,8 @@ void ABaseCharacter::SituationDialog(FString dialog)
 {
     if(mainWidget)
     {
-        mainWidget->SetDialogText(1.0f, dialog);
+        float opacityText = 1.0f;
+        mainWidget->SetDialogText(opacityText, dialog);
         FTimerDelegate dialogTimer;
         dialogTimer.BindLambda([this]() 
         {
@@ -555,7 +638,7 @@ void ABaseCharacter::SituationDialog(FString dialog)
 ////////////////////////////////////////////// INVENTORY SECTION //////////////////////////////////////////////
 // This section contains properties and methods related to character inventory.
 
-// Method that handles keys inventory, checks if player has the correct key, called from BaseDoor class.
+// Method that handles keys inventory, checks if player has the correct key.
 bool ABaseCharacter::HasKeyToOpenDoor(FName door)
 {
     for(FName singleKey : keyTags)
@@ -572,7 +655,7 @@ bool ABaseCharacter::HasKeyToOpenDoor(FName door)
 ////////////////////////////////////////////// LANTERN SECTION //////////////////////////////////////////////
 // This section contains properties and methods related to character lantern mechanic.
 
-// Methods that manage the lantern state.
+// Turn ON flashlight.
 void ABaseCharacter::LanternON()
 {
     if(!isAiming)
@@ -584,6 +667,7 @@ void ABaseCharacter::LanternON()
 
 }
 
+// Turn OFF flashlight.
 void ABaseCharacter::LanternOFF()
 {
     isLanternOn = false;
@@ -597,6 +681,7 @@ void ABaseCharacter::LanternOFF()
 
 }
 
+// Set initial light intensity.
 void ABaseCharacter::SetLanternIntensity(float intensity)
 {
     if(lantern)
@@ -609,12 +694,14 @@ void ABaseCharacter::SetLanternIntensity(float intensity)
 
 }
 
+// Method that manage lantern's battery
 void ABaseCharacter::UseLanternBattery()
 {
     currentBatteryAmount -= batteryWearAmount;
     if(mainWidget)
     {
-        mainWidget->SetFlashlightBarOpacity(1.0f);
+        float opacityBar = 1.0f;
+        mainWidget->SetFlashlightBarOpacity(opacityBar);
         mainWidget->UpdateFlashlight(currentBatteryAmount/maxBatteryAmount);
 
         if(currentBatteryAmount <= Zero)
@@ -627,10 +714,11 @@ void ABaseCharacter::UseLanternBattery()
 
 }
 
+// Method that manage recharge battery logic.
 void ABaseCharacter::NewBatteryOnFlashlight()
 {
     LanternOFF();
-    if(!isLanternOn && batteryQuantity > 0 && currentBatteryAmount == Zero)
+    if(!isLanternOn && batteryQuantity > Zero && currentBatteryAmount == Zero)
     {
         FTimerDelegate rechargeTimer;
         rechargeTimer.BindLambda([this](){
@@ -642,7 +730,7 @@ void ABaseCharacter::NewBatteryOnFlashlight()
     }
     
     FString dialog;
-    (batteryQuantity > 0 && currentBatteryAmount != Zero) ? dialog = "I still have some battery left." : dialog = "I don't have another battery.";
+    (batteryQuantity > Zero && currentBatteryAmount != Zero) ? dialog = "I still have some battery left." : dialog = "I don't have another battery.";
     SituationDialog(dialog);
 
 }
