@@ -42,15 +42,20 @@ public:
 protected:
 	////////////////////////////////////////////// Properties SECTION //////////////////////////////////////////////
 	// This section contains properties related to actor.
+
+	// Actor mesh.
 	UPROPERTY(EditAnywhere, Category = "Actor Mesh", meta = (AllowPrivateAccess))
 	UStaticMeshComponent* Mesh;
 
+	// Minimum quantity of takeable actor recives the player with interaction.
 	UPROPERTY(EditAnywhere, Category = "Generation Properties", meta = (AllowPrivateAccess))
 	int minQuantity = 1;
 
+	// Maximum quantity of takeable actor recives the player with interaction.
 	UPROPERTY(EditAnywhere, Category = "Generation Properties", meta = (AllowPrivateAccess))
 	int maxQuantity = 3;
 
+	// Enum value that hepls determine the type of actor in the world, also to know how many of this should be given to the player.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Takeable Type", meta = (AllowPrivateAccess))
 	ETakeableType takeableType;
 

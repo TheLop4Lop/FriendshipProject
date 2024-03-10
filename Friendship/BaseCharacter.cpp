@@ -42,7 +42,7 @@ void ABaseCharacter::BeginPlay()
     lookFunction4 = &ABaseCharacter::TurnRightController;
 
     SetWidgetInteractionClass();
-    SetLanternIntensity(Zero);
+    SetLanternIntensity(ZeroVal);
     canRelax = true;
 
 }
@@ -122,7 +122,7 @@ void ABaseCharacter::SetWidgetInteractionClass()
 // Method that manage the spring mechanic.
 void ABaseCharacter::Sprint()
 {
-    if(GetCharacterMovement()->Velocity.SizeSquared() > Zero)
+    if(GetCharacterMovement()->Velocity.SizeSquared() > ZeroVal)
     {
         GetCharacterMovement()->MaxWalkSpeed = FMath::FInterpTo(SprintSpeed, WalkSpeed, GetWorld()->DeltaTimeSeconds, InterpMin);
         isSprinting = true;
@@ -136,7 +136,7 @@ void ABaseCharacter::Sprint()
 // Method that manage the walk mechanic.
 void ABaseCharacter::Walk() 
 {
-    if(anxietyLevel != Zero)
+    if(anxietyLevel != ZeroVal)
     {
         GetCharacterMovement()->MaxWalkSpeed = FMath::FInterpTo(WalkSpeed, SprintSpeed, GetWorld()->DeltaTimeSeconds, InterpMax);
         isSprinting = false;
@@ -334,10 +334,10 @@ void ABaseCharacter::IncreaseAnxiety()
 // Sets initial conditions to manage the reduction on anxiety.
 void ABaseCharacter::SetReduceAnxiety()
 {
-    if(anxietyLevel != Zero && !isSprinting && canRelax && doOnceRelax) // in a fuucntion
+    if(anxietyLevel != ZeroVal && !isSprinting && canRelax && doOnceRelax) // in a fuucntion
     {
         GetWorldTimerManager().ClearTimer(timeHandle);
-        GetWorldTimerManager().SetTimer(timeHandle, this, &ABaseCharacter::ReduceAnxiety, anxietyPeriod, anxietyLevel != Zero);
+        GetWorldTimerManager().SetTimer(timeHandle, this, &ABaseCharacter::ReduceAnxiety, anxietyPeriod, anxietyLevel != ZeroVal);
 
         doOnceRelax = false;
     }
@@ -347,7 +347,7 @@ void ABaseCharacter::SetReduceAnxiety()
 // Methods than manage the anxiety reduction value.
 void ABaseCharacter::ReduceAnxiety()
 {
-    if(anxietyLevel > Zero)
+    if(anxietyLevel > ZeroVal)
     {
         anxietyLevel -= anxietyAmount;
         if(mainWidget)
@@ -357,12 +357,12 @@ void ABaseCharacter::ReduceAnxiety()
         {
             UE_LOG(LogTemp, Warning, TEXT("NULL value on mainWidgetClass."));
         }
-    }else if(anxietyLevel <= Zero)
+    }else if(anxietyLevel <= ZeroVal)
     {
-        anxietyLevel = Zero;
+        anxietyLevel = ZeroVal;
         if(mainWidget)
         {
-            mainWidget->SetAnxietyBarOpacity(Zero);
+            mainWidget->SetAnxietyBarOpacity(ZeroVal);
         }
     }
 
@@ -417,7 +417,7 @@ bool ABaseCharacter::isCharacterSptinting()
 // Sets initial condition to call heartbeat.
 void ABaseCharacter::SetHeartSound()
 {
-    if(anxietyLevel != Zero && doOnceHeart)
+    if(anxietyLevel != ZeroVal && doOnceHeart)
     {
         float minHeartValue = 1.0f;
         float heartBPM = FMath::Clamp(this->heartSound->GetDuration()/((anxietyLevel/MaxAnxiety) * this->heartSound->GetDuration()), 
@@ -473,7 +473,7 @@ void ABaseCharacter::StopAim()
     isAiming = false;
     if(mainWidget)
     {
-        mainWidget->SetCrossHairOpacity(Zero);
+        mainWidget->SetCrossHairOpacity(ZeroVal);
     }else
     {
         UE_LOG(LogTemp, Warning, TEXT("NULL value on mainWidgetClass."));
@@ -527,7 +527,7 @@ void ABaseCharacter::GetActorToInteractInTheWorld()
         mainWidget->SetInteractText(opacityText);
     }else
     {
-        mainWidget->SetInteractText(Zero);
+        mainWidget->SetInteractText(ZeroVal);
     }
 
     if(isAiming && ActorTargetByLineTrace(Hit, throwRange))
@@ -627,7 +627,7 @@ void ABaseCharacter::SituationDialog(FString dialog)
         FTimerDelegate dialogTimer;
         dialogTimer.BindLambda([this]() 
         {
-            mainWidget->SetDialogText(Zero, "");
+            mainWidget->SetDialogText(ZeroVal, "");
         });
         
         GetWorldTimerManager().SetTimer(timeFlashLightRecharge, dialogTimer, dialogDuration, false);
@@ -671,12 +671,12 @@ void ABaseCharacter::LanternON()
 void ABaseCharacter::LanternOFF()
 {
     isLanternOn = false;
-    SetLanternIntensity(Zero);
+    SetLanternIntensity(ZeroVal);
     GetWorldTimerManager().ClearTimer(timeHandleFlashLight);
 
     if(mainWidget)
     {
-        mainWidget->SetFlashlightBarOpacity(Zero);
+        mainWidget->SetFlashlightBarOpacity(ZeroVal);
     }
 
 }
@@ -704,11 +704,11 @@ void ABaseCharacter::UseLanternBattery()
         mainWidget->SetFlashlightBarOpacity(opacityBar);
         mainWidget->UpdateFlashlight(currentBatteryAmount/maxBatteryAmount);
 
-        if(currentBatteryAmount <= Zero)
+        if(currentBatteryAmount <= ZeroVal)
         {
             LanternOFF();
-            currentBatteryAmount = Zero;
-            mainWidget->SetFlashlightBarOpacity(Zero);
+            currentBatteryAmount = ZeroVal;
+            mainWidget->SetFlashlightBarOpacity(ZeroVal);
         }
     }
 
@@ -718,7 +718,7 @@ void ABaseCharacter::UseLanternBattery()
 void ABaseCharacter::NewBatteryOnFlashlight()
 {
     LanternOFF();
-    if(!isLanternOn && batteryQuantity > Zero && currentBatteryAmount == Zero)
+    if(!isLanternOn && batteryQuantity > ZeroVal && currentBatteryAmount == ZeroVal)
     {
         FTimerDelegate rechargeTimer;
         rechargeTimer.BindLambda([this](){
@@ -730,7 +730,7 @@ void ABaseCharacter::NewBatteryOnFlashlight()
     }
     
     FString dialog;
-    (batteryQuantity > Zero && currentBatteryAmount != Zero) ? dialog = "I still have some battery left." : dialog = "I don't have another battery.";
+    (batteryQuantity > ZeroVal && currentBatteryAmount != ZeroVal) ? dialog = "I still have some battery left." : dialog = "I don't have another battery.";
     SituationDialog(dialog);
 
 }

@@ -18,7 +18,7 @@ enum class EInputControllerType : uint8
 };
 
 float const MaxAnxiety = 100; // Max anxiety value const.
-float const Zero = 0; // Zero value const.
+float const ZeroVal = 0; // Zero value const.
 
 float const InterpMin = 0.3; // Interpolation minimum paramenter.
 float const InterpMax = 0.5; // Interpolation maximum paramenter.

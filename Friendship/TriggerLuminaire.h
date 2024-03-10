@@ -6,9 +6,8 @@
 #include "BaseLuminaire.h"
 #include "TriggerLuminaire.generated.h"
 
-/**
- * 
- */
+float const Zero = 0; // Zero value const.
+
 UCLASS()
 class FRIENDSHIP_API ATriggerLuminaire : public ABaseLuminaire
 {
@@ -33,14 +32,19 @@ protected:
 
 	// Manages the anxiety on Player Character, depends if light is active or not.
 	void SetAnxietyFunctionality();
+	// Method that manages the timer setting on anxietyTimer.
 	void ManageCharacterOnTrigger();
 
+	// Stores the player character.
 	class ABaseCharacter* character;
 	TArray<AActor*> Actors;
 
+	// Timer that handles the anxiey timer on the player.
 	FTimerHandle anxietyTimer;
+	// Timer delagate that calls anxiety on BaseCharacter.
 	FTimerDelegate anxietyDelagate;
 
+	// Control bool timer state.
 	bool doOnceTimer = true;
 
 };

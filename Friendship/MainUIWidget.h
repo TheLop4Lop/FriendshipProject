@@ -7,15 +7,17 @@
 #include "BaseCharacter.h" // For MainUIWdget to have EInputControllerType
 #include "MainUIWidget.generated.h"
 
-/**
- * 
- */
+float const Zero = 0; // Zero value const.
+float const One = 1; // One value const.
+float const MinInterp = 0.01; // 0.01 value const.
+
 UCLASS()
 class FRIENDSHIP_API UMainUIWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
 protected:
+	//Class constructor.
 	virtual void NativeConstruct() override;
 
 public: 
@@ -47,13 +49,15 @@ private:
 	////////////////////////////////////////////// PROPERTIES SECTION //////////////////////////////////////////////
 	// This section contains properties related to widget mechanics.
 
-	// Bar and text indicator, helps the player know the quanity of anxiety while playing.
+	// Bar indicator, helps the player know the quantity of anxiety while playing.
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UProgressBar* anxietyBar;
 
+	// Relax text indicator, helps the player know the quantity of anxiety while playing.
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UTextBlock* relaxedText;
 
+	// Anxiety text indicator, helps the player know the quantity of anxiety while playing.
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UTextBlock* anxietyText;
 
@@ -65,19 +69,32 @@ private:
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UImage* crossHair;
 
+	// Bar indicator, helps the player know the quantity of battery while playing.
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UProgressBar* flashlightBar;
 
+	// Text to indicate the context on the situation.
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UTextBlock* dialogText;
 
+	// Add mechanic into gameplay mechanic, the blur strenght depends on the anxiety.
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UBackgroundBlur* backBlur;
 
+	// Add mechanic into gameplay mechanic, the noise strenght depends on the anxiety.
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UImage* anxietyNoise;
 
+	// Determine the general strenght on the blur.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anxiey Blur", meta = (AllowPrivateAccess))
 	float blurRate = 3.5f;
+
+	// Determine the general opacity on the blur.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anxiey Blur", meta = (AllowPrivateAccess))
+	float opacityAjustment = 1.4f;
+
+	// Value that determines when some action on the mechanics.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anxiey Blur", meta = (AllowPrivateAccess))
+	float percentageBar = 0.25;
 	
 };

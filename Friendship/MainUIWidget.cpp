@@ -7,8 +7,7 @@
 #include "Components/TextBlock.h"
 #include "Components/Image.h"
 
-#define Zero 0
-
+//Class constructor.
 void UMainUIWidget::NativeConstruct()
 {
     Super::NativeConstruct();
@@ -34,13 +33,13 @@ void UMainUIWidget::UpdateAnxiety(float value)
 {
     if(anxietyBar && backBlur)
     {
-        float ClampedValue = FMath::Clamp(value, 0.0f, 1.0f);
+        float ClampedValue = FMath::Clamp(value, Zero, One);
         anxietyBar->SetPercent(ClampedValue);
         backBlur->SetBlurStrength(value * blurRate);
-        if(value >= 0.25)
+        if(value >= percentageBar)
         {
-            float noiseClampedValue = FMath::Clamp(value, 0.0f, 1.0f);
-            float adjustedOpacity = FMath::Max(noiseClampedValue - 0.25f, 0.0f) * 1.4f;
+            float noiseClampedValue = FMath::Clamp(value, Zero, One);
+            float adjustedOpacity = FMath::Max(noiseClampedValue - percentageBar, Zero) * opacityAjustment;
             SetAnxietyNoiseOpacity(adjustedOpacity);
         }
     }else
@@ -55,9 +54,9 @@ void UMainUIWidget::SetAnxietyBarOpacity(float opacity)
 {
     if(anxietyBar && relaxedText && anxietyText)
     {
-        anxietyBar->SetRenderOpacity(FMath::FInterpTo(opacity, anxietyBar->RenderOpacity, GetWorld()->GetDeltaSeconds(), 0.01f));
-        relaxedText->SetRenderOpacity(FMath::FInterpTo(opacity, anxietyBar->RenderOpacity, GetWorld()->GetDeltaSeconds(), 0.01f));
-        anxietyText->SetRenderOpacity(FMath::FInterpTo(opacity, anxietyBar->RenderOpacity, GetWorld()->GetDeltaSeconds(), 0.01f));
+        anxietyBar->SetRenderOpacity(FMath::FInterpTo(opacity, anxietyBar->RenderOpacity, GetWorld()->GetDeltaSeconds(), MinInterp));
+        relaxedText->SetRenderOpacity(FMath::FInterpTo(opacity, anxietyBar->RenderOpacity, GetWorld()->GetDeltaSeconds(), MinInterp));
+        anxietyText->SetRenderOpacity(FMath::FInterpTo(opacity, anxietyBar->RenderOpacity, GetWorld()->GetDeltaSeconds(), MinInterp));
     }else
     {
         UE_LOG(LogTemp, Error, TEXT("No anxietyComponents found in WidgetBlueprint to update Opacity."));
@@ -70,7 +69,7 @@ void UMainUIWidget::SetAnxietyNoiseOpacity(float opacity)
 {
     if(anxietyNoise)
     {
-        anxietyNoise->SetRenderOpacity(FMath::FInterpTo(opacity, anxietyBar->RenderOpacity, GetWorld()->GetDeltaSeconds(), 0.01f));
+        anxietyNoise->SetRenderOpacity(FMath::FInterpTo(opacity, anxietyBar->RenderOpacity, GetWorld()->GetDeltaSeconds(), MinInterp));
     }else
     {
         UE_LOG(LogTemp, Error, TEXT("No Anxiety Noise found in WidgetBlueprint to update Opacity."));
@@ -83,7 +82,7 @@ void UMainUIWidget::SetCrossHairOpacity(float opacity)
 {
     if(crossHair)
     {
-        crossHair->SetRenderOpacity(FMath::FInterpTo(opacity, anxietyBar->RenderOpacity, GetWorld()->GetDeltaSeconds(), 0.01f));
+        crossHair->SetRenderOpacity(FMath::FInterpTo(opacity, anxietyBar->RenderOpacity, GetWorld()->GetDeltaSeconds(), MinInterp));
     }else
     {
         UE_LOG(LogTemp, Error, TEXT("No crossHair found in WidgetBlueprint to update Opacity."));
@@ -133,7 +132,7 @@ void UMainUIWidget::SetTextContentByController(EInputControllerType controllerTy
 // Method to control text, indicate the player that the object can be picked.
 void UMainUIWidget::SetInteractText(float opacity)
 {
-    interacText->SetRenderOpacity(FMath::FInterpTo(opacity, anxietyBar->RenderOpacity, GetWorld()->GetDeltaSeconds(), 0.01f));
+    interacText->SetRenderOpacity(FMath::FInterpTo(opacity, anxietyBar->RenderOpacity, GetWorld()->GetDeltaSeconds(), MinInterp));
     
 }
 
@@ -141,7 +140,7 @@ void UMainUIWidget::UpdateFlashlight(float value)
 {
     if(flashlightBar)
     {
-        float ClampedValue = FMath::Clamp(value, 0.0f, 1.0f);
+        float ClampedValue = FMath::Clamp(value, Zero, One);
         flashlightBar->SetPercent(ClampedValue);
     }else
     {
@@ -153,13 +152,14 @@ void UMainUIWidget::UpdateFlashlight(float value)
 // Method to control text, indicate the player an event that is happening in the gameplay.
 void UMainUIWidget::SetFlashlightBarOpacity(float opacity)
 {
-    flashlightBar->SetRenderOpacity(FMath::FInterpTo(opacity, anxietyBar->RenderOpacity, GetWorld()->GetDeltaSeconds(), 0.01f));
+    flashlightBar->SetRenderOpacity(FMath::FInterpTo(opacity, anxietyBar->RenderOpacity, GetWorld()->GetDeltaSeconds(), MinInterp));
 
 }
 
+// Method to control text, indicate the player an event that is happening in the gameplay.
 void UMainUIWidget::SetDialogText(float opacity, FString dialog)
 {
-    dialogText->SetRenderOpacity(FMath::FInterpTo(opacity, anxietyBar->RenderOpacity, GetWorld()->GetDeltaSeconds(), 0.01f));
+    dialogText->SetRenderOpacity(FMath::FInterpTo(opacity, anxietyBar->RenderOpacity, GetWorld()->GetDeltaSeconds(), MinInterp));
     dialogText->SetText(FText::FromString(dialog));
 
 }

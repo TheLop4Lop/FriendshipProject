@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "BaseDestructible.generated.h"
 
+float const Zero = 0; // Zero value const.
+
 UCLASS()
 class FRIENDSHIP_API ABaseDestructible : public AActor
 {

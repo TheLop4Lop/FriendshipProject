@@ -24,7 +24,6 @@ void ABaseLuminaire::BeginPlay()
 	Super::BeginPlay();
 
 	lightPrevState = isLightOn;
-	//lightType->SetIntensity(maxLight);
 	
 }
 
@@ -41,6 +40,7 @@ void ABaseLuminaire::Tick(float DeltaTime)
 
 }
 
+// Set the light intensity by the actor.
 void ABaseLuminaire::SetLigthing(bool light)
 {
 	if(light)

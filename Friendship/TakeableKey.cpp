@@ -3,6 +3,14 @@
 
 #include "TakeableKey.h"
 
+// Sets default values for this actor's properties
+ATakeableKey::ATakeableKey()
+{
+    doorToUnlock = TEXT("None");
+
+}
+
+// Returns the Ket Tag to open an specific BaseDoor Class.
 FName ATakeableKey::GetKeyNameUnlockDoor()
 {
     return doorToUnlock;

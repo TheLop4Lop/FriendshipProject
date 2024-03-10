@@ -20,6 +20,10 @@ void ABaseCharacterController::SetupInputComponent()
 
 }
 
+////////////////////////////////////////////// Movement SECTION //////////////////////////////////////////////
+// This section contains properties and methods related to character movement camera mechanic.
+
+// Method tha manages the changes of movement on the cameraState pointer.
 void ABaseCharacterController::SetCamerastateMovement(ECameraMovement movement)
 {
     if(idle && walking && sprint)
@@ -49,6 +53,7 @@ void ABaseCharacterController::SetCamerastateMovement(ECameraMovement movement)
 
 }
 
+// Method tha manages the changes of movement on the cameraState pointer.
 void ABaseCharacterController::StartCameraMovement()
 {
     if(cameraState)

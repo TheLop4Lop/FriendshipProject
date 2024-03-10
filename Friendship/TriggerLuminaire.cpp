@@ -16,7 +16,7 @@ ATriggerLuminaire::ATriggerLuminaire() : ABaseLuminaire()
 void ATriggerLuminaire::BeginPlay()
 {
     Super::BeginPlay();
-    character = Cast<ABaseCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+    character = Cast<ABaseCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), Zero));
 
 }
 
@@ -52,6 +52,7 @@ void ATriggerLuminaire::SetAnxietyFunctionality()
 
 }
 
+// Method that manages the timer setting on anxietyTimer.
 void ATriggerLuminaire::ManageCharacterOnTrigger()
 {
     GetWorldTimerManager().ClearTimer(anxietyTimer);

@@ -42,6 +42,7 @@ void ABaseDoor::Tick(float DeltaTime)
 
 }
 
+// Called by BaseCharacter class when player try to acces the door.
 void ABaseDoor::TryAccessToDoor(class ABaseCharacter* character)
 {
 	ABaseCharacter* playerCharacter = character;
@@ -59,6 +60,7 @@ void ABaseDoor::TryAccessToDoor(class ABaseCharacter* character)
 
 }
 
+// Method that handle the door mechanic.
 void ABaseDoor::OpenDoor()
 {
 	isOpen = true;
@@ -66,6 +68,7 @@ void ABaseDoor::OpenDoor()
 
 }
 
+// Checks the status condition of door.
 bool ABaseDoor::IsDoorOpen()
 {
 	return isOpen;

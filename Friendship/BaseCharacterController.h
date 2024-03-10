@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "BaseCharacterController.generated.h"
 
+// Enum that holds the values that the Camera Shake Class may react.
 UENUM(BlueprintType)
 enum class ECameraMovement : uint8
 {
@@ -23,6 +24,7 @@ class FRIENDSHIP_API ABaseCharacterController : public APlayerController
 	GENERATED_BODY()
 
 public:
+	// Method called by the BaseCharacter class, indicates the new movement status.
 	void SetCamerastateMovement(ECameraMovement movement);
 
 protected:
@@ -31,17 +33,25 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
 
+	////////////////////////////////////////////// Movement SECTION //////////////////////////////////////////////
+	// This section contains properties and methods related to character movement camera mechanic.
+
+	// Shake camera class, Matinee Pointer, IDLE.
 	UPROPERTY(EditAnywhere, Category = "Camera Shake Movement", meta = (AllowPrivateAccess))
 	TSubclassOf<UCameraShakeBase> idle;
 
+	// Shake camera class, Matinee Pointer, WALKING.
 	UPROPERTY(EditAnywhere, Category = "Camera Shake Movement", meta = (AllowPrivateAccess))
 	TSubclassOf<UCameraShakeBase> walking;
 
+	// Shake camera class, Matinee Pointer, SPRINT.
 	UPROPERTY(EditAnywhere, Category = "Camera Shake Movement", meta = (AllowPrivateAccess))
 	TSubclassOf<UCameraShakeBase> sprint;
 
+	// Pointer that holds the Shake Camera Pointer class, this will change depends on character actions.
 	TSubclassOf<UCameraShakeBase>* cameraState;
 
+	// Method tha manages the changes of movement on the cameraState pointer.
 	void StartCameraMovement();
 
 };

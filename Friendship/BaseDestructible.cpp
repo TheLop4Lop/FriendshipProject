@@ -37,7 +37,7 @@ float ABaseDestructible::TakeDamage(float DamageAmount, struct FDamageEvent cons
 	float damageIn = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
 	resistance -= damageIn;
-	if(resistance <= 0)
+	if(resistance <= Zero)
 	{
 		Destroy();
 	}
