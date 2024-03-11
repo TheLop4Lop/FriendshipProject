@@ -166,8 +166,11 @@ private:
 	// Control step state.
 	bool doOnceStep = true;
 
+	float aproximateStep;
+	// Set steps duration.
+	void SetStepDuration(float duration);
 	// Test function for steps functionality.
-	void stepiStp();
+	void PlayStepSound();
 
 	// Timer for steps sound regulation.
 	FTimerHandle timeStep;
@@ -251,6 +254,8 @@ private:
 	void SetGetActorToInteractInTheWorldWidget();
 	// Get the actor on player sight, this adds interaction on widget, depends of the type of object.
 	void GetActorToInteractInTheWorld();
+	// Method that helps GetActorToInteractInTheWorld to get interactive mesagge, depends on the type of actor the player has on sight.
+	FString GetInteractionText();
 	// Method that return and interact with the actors in the world.
 	AActor* ActorTargetByLineTrace(FHitResult& result, float& range);
 	//Stores the the actor on players sight, this is use for throw mechanic.

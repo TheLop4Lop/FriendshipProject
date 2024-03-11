@@ -33,7 +33,7 @@ public:
 	void SetCrossHairColor(FLinearColor color);
 
 	// Method to control content of text, this depends on the type of controller the player.
-	void SetTextContentByController(EInputControllerType controllerType);
+	void SetTextContentByController(EInputControllerType controllerType, FString interaction);
 	// Method to control text, indicate the player that the object can be picked.
 	void SetInteractText(float opacity);
 

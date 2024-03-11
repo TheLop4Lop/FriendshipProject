@@ -104,23 +104,23 @@ void UMainUIWidget::SetCrossHairColor(FLinearColor color)
 }
 
 // Method to control content of text, this depends on the type of controller the player.
-void UMainUIWidget::SetTextContentByController(EInputControllerType controllerType)
+void UMainUIWidget::SetTextContentByController(EInputControllerType controllerType, FString interaction)
 {
     FString updateText;
     switch(controllerType)
     {
         case EInputControllerType::CONTROLLER_CONTROLLER:
-            updateText = TEXT("Press 'X' to interact.");
+            updateText = TEXT("Press 'X' to " + interaction);
             interacText->SetText(FText::FromString(updateText));
             break;
         
         case EInputControllerType::KEYBOARD_CONTROLLER:
-            updateText = TEXT("Press 'E' to interact.");
+            updateText = TEXT("Press 'E' to "  + interaction);
             interacText->SetText(FText::FromString(updateText));
             break;
     
         case EInputControllerType::OCULUS_CONTROLLER:
-            updateText = TEXT("Grap to interact.");
+            updateText = TEXT("Grap to "  + interaction);
             interacText->SetText(FText::FromString(updateText));
             break;
         

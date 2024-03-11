@@ -280,26 +280,41 @@ void ABaseCharacter::SetCameraActionMovement()
     {
         if(GetCharacterMovement()->Velocity.Size() < WalkSpeed/2)
         {
+            GetWorldTimerManager().ClearTimer(timeStep);
+            doOnceStep = true;
+            
             characterController->SetCamerastateMovement(ECameraMovement::IDLE);
         }else if(GetCharacterMovement()->Velocity.Size() < SprintSpeed - MaxAnxiety && GetCharacterMovement()->Velocity.Size() >= WalkSpeed/2)
         {
             characterController->SetCamerastateMovement(ECameraMovement::WALKING);
-            if(stepsSound && doOnceStep)
-            {
-                GetWorldTimerManager().SetTimer(timeStep, this, &ABaseCharacter::stepiStp, 0.40f, doOnceStep);
-                
-                doOnceStep = false;
-            }
+
+            aproximateStep = 0.598f; // Calculated, but needs improvement.
+            SetStepDuration(aproximateStep);
         }else if(isSprinting || anxietyLevel > MaxAnxiety/2)
         {
             characterController->SetCamerastateMovement(ECameraMovement::SPRINTING);
+
+            aproximateStep = 0.3588f; // Calculated, but needs improvement.
+            SetStepDuration(aproximateStep);
         }
     }
 
 }
 
+void ABaseCharacter::SetStepDuration(float duration)
+{
+    if(stepsSound && doOnceStep)
+    {
+        GetWorldTimerManager().ClearTimer(timeStep);
+        GetWorldTimerManager().SetTimer(timeStep, this, &ABaseCharacter::PlayStepSound, duration, doOnceStep);////////////////////////////
+        
+        doOnceStep = false;
+    }
+
+}
+
 // Test function for steps functionality.
-void ABaseCharacter::stepiStp()
+void ABaseCharacter::PlayStepSound()
 {
     UGameplayStatics::PlaySoundAtLocation(this, stepsSound, GetActorLocation());
     doOnceStep = true;
@@ -523,7 +538,7 @@ void ABaseCharacter::GetActorToInteractInTheWorld()
     if(pickableActor && pickableActor->ActorHasTag(TagTakeableActor) || currentDoor && !currentDoor->IsDoorOpen())
     {
         float opacityText = 1.0f;
-        mainWidget->SetTextContentByController(controllerType);
+        mainWidget->SetTextContentByController(controllerType, GetInteractionText()); // Add new FString paramenter.
         mainWidget->SetInteractText(opacityText);
     }else
     {
@@ -545,6 +560,36 @@ void ABaseCharacter::GetActorToInteractInTheWorld()
         mainWidget->SetCrossHairColor(FLinearColor::White);
     }
 
+}
+
+FString ABaseCharacter::GetInteractionText()
+{
+    FString interactionText;
+    if(pickableActor)
+    {
+        takeableType = pickableActor->GetTypeOfTakeable();
+        switch (takeableType)
+        {
+        case ETakeableType::KEY:
+            interactionText = TEXT("take key.");
+            break;
+        case ETakeableType::BATTERY:
+            interactionText = TEXT("take battery.");
+            break;
+        case ETakeableType::THROWABLE:
+            interactionText = TEXT("take rock.");
+            break;
+        
+        default:
+            interactionText = "";
+            break;
+        }
+    }else if(currentDoor)
+    {
+        currentDoor->IsDoorOpen()? interactionText = interactionText = TEXT("close door.") : interactionText = TEXT("open door.");
+    }
+
+    return interactionText;
 }
 
 // Method that return and interact with the actors in the world.
@@ -582,7 +627,6 @@ void ABaseCharacter::TakeObject()
 {
     if(pickableActor)
     {
-        takeableType = pickableActor->GetTypeOfTakeable();
         ATakeableKey* key = Cast<ATakeableKey>(pickableActor);
         switch (takeableType)
         {
