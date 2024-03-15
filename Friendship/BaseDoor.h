@@ -27,8 +27,11 @@ public:
 	bool IsDoorOpen();
 
 	// Called by BaseCharacter class when player try to acces the door.
-	void TryAccessToDoor(class ABaseCharacter* character);
+	FName TryAccessToDoor();
 
+	// Method that handle the door mechanic.
+	void OpenDoor();
+	
 protected:
 	////////////////////////////////////////////// Properties SECTION //////////////////////////////////////////////
 	// This section contains properties related to actor.
@@ -56,8 +59,5 @@ protected:
 	// Physic constrains for physics door mechanics.
 	UPROPERTY(EditAnywhere, Category = "Actor Mesh", meta = (AllowPrivateAccess))
 	class UPhysicsConstraintComponent* physicsConstrain;
-
-	// Method that handle the door mechanic.
-	void OpenDoor();
 
 };

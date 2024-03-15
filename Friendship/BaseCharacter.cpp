@@ -9,6 +9,7 @@
 #include "Blueprint/UserWidget.h"
 #include "MainUIWidget.h"
 #include "TakeableKey.h"
+#include "DoorWidget.h"
 #include "BaseDoor.h"
 
 // Sets default values
@@ -452,7 +453,7 @@ void ABaseCharacter::CheckAndPlayHeartSound()
     if(heartSound)
     {
         float minHeartValue = 1.0f;
-        float heartVolume = anxietyLevel/MaxAnxiety;
+        float heartVolume = (anxietyLevel/MaxAnxiety)/2;
         float heartPitch = FMath::Clamp(((anxietyLevel/MaxAnxiety) * this->heartSound->GetDuration()), minHeartValue, this->heartSound->GetDuration());
 
         UGameplayStatics::PlaySoundAtLocation(this, heartSound, GetActorLocation(), heartVolume, heartPitch);
@@ -535,7 +536,7 @@ void ABaseCharacter::GetActorToInteractInTheWorld()
 {
     pickableActor = Cast<ABaseTakeable>(ActorTargetByLineTrace(Hit, pickRange));
     currentDoor = Cast<ABaseDoor>(ActorTargetByLineTrace(Hit, pickRange));
-    if(pickableActor && pickableActor->ActorHasTag(TagTakeableActor) || currentDoor && !currentDoor->IsDoorOpen())
+    if(pickableActor && pickableActor->ActorHasTag(TagTakeableActor) || currentDoor)
     {
         float opacityText = 1.0f;
         mainWidget->SetTextContentByController(controllerType, GetInteractionText()); // Add new FString paramenter.
@@ -586,7 +587,7 @@ FString ABaseCharacter::GetInteractionText()
         }
     }else if(currentDoor)
     {
-        currentDoor->IsDoorOpen()? interactionText = interactionText = TEXT("close door.") : interactionText = TEXT("open door.");
+        currentDoor->IsDoorOpen()? interactionText = interactionText = TEXT("CLOSE door.") : interactionText = TEXT("OPEN door.");
     }
 
     return interactionText;
@@ -651,9 +652,20 @@ void ABaseCharacter::TakeObject()
         }
 
         pickableActor->DestroyTakeable();
-    }else if(currentDoor)
+    }else if(currentDoor && doorWidgetClass)
     {
-       currentDoor->TryAccessToDoor(this);
+        doorWidget = Cast<UDoorWidget>(CreateWidget(characterController, doorWidgetClass));
+        if(doorWidget && characterController)
+        {
+            LanternOFF();
+            doorWidget->AddToViewport();
+            doorWidget->SetKeysForDoorKnob(keyTags, currentDoor->TryAccessToDoor());
+            doorWidget->knobEvent.BindUObject(this, &ABaseCharacter::ReturnToGameplaySettingsTimer);
+            doorWidget->exitEvent.BindUObject(this, &ABaseCharacter::ReturnToGameplaySettings);
+
+            DisableInput(characterController);
+            characterController->SetMouseConfigurationEvents(true, anxietyLevel);
+        }
     }else
     {
          UE_LOG(LogTemp, Warning, TEXT("No Actor to interact in sight."));
@@ -776,5 +788,30 @@ void ABaseCharacter::NewBatteryOnFlashlight()
     FString dialog;
     (batteryQuantity > ZeroVal && currentBatteryAmount != ZeroVal) ? dialog = "I still have some battery left." : dialog = "I don't have another battery.";
     SituationDialog(dialog);
+
+}
+
+////////////////////////////////////////////// DOOR SECTION //////////////////////////////////////////////
+// This section contains properties and methods related to character door mechanic.
+
+void ABaseCharacter::ReturnToGameplaySettingsTimer()
+{  
+    GetWorldTimerManager().SetTimer(timeToTestKey, this, &ABaseCharacter::ReturnToGameplaySettings, timeToOpen, false);
+
+}
+
+// Called after delegate call, returns mouse configuration to default game configuration.
+void ABaseCharacter::ReturnToGameplaySettings()
+{
+    EnableInput(characterController);
+    characterController->SetMouseConfigurationEvents(false, Zero);
+    if(doorWidget)
+    {
+        if(doorWidget->CanOpenDoor() && currentDoor)
+        {
+            currentDoor->OpenDoor();
+        }
+        doorWidget->RemoveFromParent();
+    }
 
 }

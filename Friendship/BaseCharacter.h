@@ -294,9 +294,6 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Character Inventory", meta = (AllowPrivateAccess))
 	int keyQuantity;
 
-	// Actual keys the player has taken from the world, each of them only open one door.
-	TArray<FName> keyTags;
-
 	// Enum variable, keeps track of takeable type from tooked actor on sight.
 	ETakeableType takeableType;
 
@@ -350,5 +347,35 @@ private:
 	FTimerHandle timeHandleFlashLight;
 	// Timer to handle battery recharge.
 	FTimerHandle timeFlashLightRecharge;
+
+	////////////////////////////////////////////// DOOR SECTION //////////////////////////////////////////////
+	// This section contains properties and methods related to character door mechanic.
+
+	// Time value for time needed to open door.
+	UPROPERTY(EditAnywhere, Category = "Open Door", meta = (AllowPrivateProperty))
+	float timeToOpen = 1.0f;
+
+	// Time value for time needed to open door.
+	UPROPERTY(EditAnywhere, Category = "Open Door", meta = (AllowPrivateProperty))
+	float doorAnxiety = 1.0f;
+
+	// Actual keys the player has taken from the world, each of them only open one door.
+	TArray<FName> keyTags;
+
+	// Widget subclass, contains reference to door interaction Widget.
+	UPROPERTY(EditAnywhere, Category = "Character Widget", meta = (AllowPrivateAccess))
+	TSubclassOf<class UUserWidget> doorWidgetClass;
+
+	// Points to Door Interaction Widget.
+	class UDoorWidget* doorWidget;
+
+	// Called after delegate call, returns mouse configuration to default game configuration.
+	void ReturnToGameplaySettingsTimer();
+
+	// Called timer call, returns mouse configuration to default game configuration.
+	void ReturnToGameplaySettings();
+
+	// Timer handle to open door.
+	FTimerHandle timeToTestKey;
 
 };

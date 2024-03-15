@@ -33,8 +33,8 @@ void UMainUIWidget::UpdateAnxiety(float value)
 {
     if(anxietyBar && backBlur)
     {
-        float ClampedValue = FMath::Clamp(value, Zero, One);
-        anxietyBar->SetPercent(ClampedValue);
+        anxietyValue = FMath::Clamp(value, Zero, One);
+        anxietyBar->SetPercent(anxietyValue);
         backBlur->SetBlurStrength(value * blurRate);
         if(value >= percentageBar)
         {
@@ -153,6 +153,7 @@ void UMainUIWidget::UpdateFlashlight(float value)
 void UMainUIWidget::SetFlashlightBarOpacity(float opacity)
 {
     flashlightBar->SetRenderOpacity(FMath::FInterpTo(opacity, anxietyBar->RenderOpacity, GetWorld()->GetDeltaSeconds(), MinInterp));
+    flashlightIcon->SetRenderOpacity(opacity);
 
 }
 

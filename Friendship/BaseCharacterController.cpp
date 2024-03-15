@@ -10,6 +10,7 @@
 void ABaseCharacterController::BeginPlay()
 {
     Pawn = GetPawn();
+    doOnceAnxiety = true;
 
 }
 
@@ -17,6 +18,21 @@ void ABaseCharacterController::BeginPlay()
 void ABaseCharacterController::SetupInputComponent()
 {
     Super::SetupInputComponent();
+
+}
+
+void ABaseCharacterController::Tick(float DeltaTime)
+{
+    Super::Tick(DeltaTime);
+
+    if(usingWidget && doOnceAnxiety)
+    {
+        GetWorldTimerManager().ClearTimer(anxietyTimer);
+        GetWorldTimerManager().SetTimer(anxietyTimer, this, &ABaseCharacterController::ManageMouseAnxiety, 
+                                        mouseAnxietyRate/anxietyOnPlayer, usingWidget);
+    
+        doOnceAnxiety = false;
+    }
 
 }
 
@@ -53,6 +69,19 @@ void ABaseCharacterController::SetCamerastateMovement(ECameraMovement movement)
 
 }
 
+// Method that manages mouse events, used for Widgets.
+void ABaseCharacterController::SetMouseConfigurationEvents(bool bEvent, float anxiety)
+{
+    usingWidget = bEvent;
+    bShowMouseCursor = bEvent;
+    bEnableClickEvents = bEvent;
+    bEnableMouseOverEvents = bEvent;
+
+    anxietyOnPlayer = FMath::Clamp(anxiety, 1.0f, 100.0f);
+    bEvent? SetInputMode(FInputModeGameAndUI()) : SetInputMode(FInputModeGameOnly());
+    
+}
+
 // Method tha manages the changes of movement on the cameraState pointer.
 void ABaseCharacterController::StartCameraMovement()
 {
@@ -60,5 +89,28 @@ void ABaseCharacterController::StartCameraMovement()
     {
         ClientStartCameraShake(*cameraState);
     }
+
+}
+
+void ABaseCharacterController::ManageMouseAnxiety()
+{
+    float mouseX, mouseY;
+    GetMousePosition(mouseX, mouseY);
+
+    float mouseRateX = FMath::RandRange(-1.0f, 1.0f);
+    float mouseRateY = FMath::RandRange(-1.0f, 1.0f);
+
+    const float MovementScale = 0.1f;
+    mouseX += mouseRateX * MovementScale;
+    mouseY += mouseRateY * MovementScale;
+
+    const float ScreenWidth = 1920; 
+    const float ScreenHeight = 1080; 
+    mouseX = FMath::Clamp(mouseX, mousePositionX, ScreenWidth);
+    mouseY = FMath::Clamp(mouseY, mousePositionY, ScreenHeight);
+
+    SetMouseLocation(mouseX, mouseY);
+
+    doOnceAnxiety = true;
 
 }

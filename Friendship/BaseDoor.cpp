@@ -43,20 +43,9 @@ void ABaseDoor::Tick(float DeltaTime)
 }
 
 // Called by BaseCharacter class when player try to acces the door.
-void ABaseDoor::TryAccessToDoor(class ABaseCharacter* character)
+FName ABaseDoor::TryAccessToDoor()
 {
-	ABaseCharacter* playerCharacter = character;
-	if(playerCharacter)
-	{
-		if(playerCharacter->HasKeyToOpenDoor(keyToUnlock))
-		{
-			OpenDoor();
-			UE_LOG(LogTemp, Display, TEXT("Please sir! Enter to the chambers!"));
-		}else if(!isOpen)
-		{
-			playerCharacter->SituationDialog("I don't have the key for this door.");
-		}
-	}
+	return keyToUnlock;
 
 }
 

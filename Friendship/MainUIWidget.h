@@ -49,6 +49,10 @@ private:
 	////////////////////////////////////////////// PROPERTIES SECTION //////////////////////////////////////////////
 	// This section contains properties related to widget mechanics.
 
+	// Helps the player know the quantity of anxiety while playing.
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UImage* heartIcon;
+
 	// Bar indicator, helps the player know the quantity of anxiety while playing.
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UProgressBar* anxietyBar;
@@ -69,6 +73,10 @@ private:
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UImage* crossHair;
 
+	// Helps the player know the quantity of anxiety while playing.
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UImage* flashlightIcon;
+
 	// Bar indicator, helps the player know the quantity of battery while playing.
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UProgressBar* flashlightBar;
@@ -84,6 +92,9 @@ private:
 	// Add mechanic into gameplay mechanic, the noise strenght depends on the anxiety.
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UImage* anxietyNoise;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anxiey Blur", meta = (AllowPrivateAccess))
+	float anxietyValue;
 
 	// Determine the general strenght on the blur.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anxiey Blur", meta = (AllowPrivateAccess))
