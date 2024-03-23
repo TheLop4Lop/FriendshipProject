@@ -6,8 +6,6 @@
 #include "BaseLuminaire.h"
 #include "TriggerLuminaire.generated.h"
 
-float const Zero = 0; // Zero value const.
-
 UCLASS()
 class FRIENDSHIP_API ATriggerLuminaire : public ABaseLuminaire
 {
@@ -24,6 +22,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// Returns the anxietyBox reference.
+	bool IsTriggerBeingOverlapped();
+
 protected:
 	////////////////////////////////////////////// ANXIETY SECTION //////////////////////////////////////////////
 	// This section contains properties and methods related to character anxiety mechanic.
@@ -32,8 +33,6 @@ protected:
 
 	// Manages the anxiety on Player Character, depends if light is active or not.
 	void SetAnxietyFunctionality();
-	// Method that manages the timer setting on anxietyTimer.
-	void ManageCharacterOnTrigger();
 
 	// Stores the player character.
 	class ABaseCharacter* character;
@@ -44,7 +43,10 @@ protected:
 	// Timer delagate that calls anxiety on BaseCharacter.
 	FTimerDelegate anxietyDelagate;
 
+	// Checks if actor is overlaping.
+	bool characterIsOverlaping;
+
 	// Control bool timer state.
-	bool doOnceTimer = true;
+	bool doOnceOverlap;
 
 };

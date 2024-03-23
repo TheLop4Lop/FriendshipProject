@@ -16,7 +16,8 @@ ATriggerLuminaire::ATriggerLuminaire() : ABaseLuminaire()
 void ATriggerLuminaire::BeginPlay()
 {
     Super::BeginPlay();
-    character = Cast<ABaseCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), Zero));
+    character = Cast<ABaseCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+    doOnceOverlap = true;
 
 }
 
@@ -34,28 +35,24 @@ void ATriggerLuminaire::Tick(float DeltaTime)
 // Manages the anxiety on Player Character, depends if light is active or not.
 void ATriggerLuminaire::SetAnxietyFunctionality()
 {
-    if(anxietyBox->IsOverlappingActor(character) && !isLightOn && doOnceTimer)
+    if(anxietyBox->IsOverlappingActor(character) && doOnceOverlap)
     {
-        character->SetConditionsToRelax(false);
-        anxietyDelagate.BindLambda([this](){
-            character->IncreaseAnxietyOnCharacter();
-        });
+        if(!isLightOn)
+        {
+            characterIsOverlaping = true;
+        }
 
-        ManageCharacterOnTrigger();
-        doOnceTimer = false;
-    }else if (!anxietyBox->IsOverlappingActor(character) && !doOnceTimer)
+        doOnceOverlap = false;
+    }else if (!anxietyBox->IsOverlappingActor(character) && !doOnceOverlap)
     {
-        GetWorldTimerManager().ClearTimer(anxietyTimer);
-        character->SetConditionsToRelax(true);
-        doOnceTimer = true;
+        characterIsOverlaping = false;
+        doOnceOverlap = true;
     }
 
 }
 
-// Method that manages the timer setting on anxietyTimer.
-void ATriggerLuminaire::ManageCharacterOnTrigger()
+bool ATriggerLuminaire::IsTriggerBeingOverlapped()
 {
-    GetWorldTimerManager().ClearTimer(anxietyTimer);
-    GetWorldTimerManager().SetTimer(anxietyTimer, anxietyDelagate, character->GetAnxietyPeriod(), true);
+    return characterIsOverlaping;
 
 }

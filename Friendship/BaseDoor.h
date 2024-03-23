@@ -25,12 +25,14 @@ public:
 
 	// Checks the status condition of door.
 	bool IsDoorOpen();
+	// Checks if door is in position to close.
+	bool CanDoorBeLocked();
 
 	// Called by BaseCharacter class when player try to acces the door.
 	FName TryAccessToDoor();
 
 	// Method that handle the door mechanic.
-	void OpenDoor();
+	void ActionDoor(bool action);
 	
 protected:
 	////////////////////////////////////////////// Properties SECTION //////////////////////////////////////////////
@@ -59,5 +61,11 @@ protected:
 	// Physic constrains for physics door mechanics.
 	UPROPERTY(EditAnywhere, Category = "Actor Mesh", meta = (AllowPrivateAccess))
 	class UPhysicsConstraintComponent* physicsConstrain;
+
+	bool canBeLocked;
+	bool doOnceSwing;
+
+	float currentSwing;
+	float prevSwing;
 
 };

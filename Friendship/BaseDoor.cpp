@@ -3,7 +3,6 @@
 
 #include "BaseDoor.h"
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
-#include "BaseCharacter.h"
 
 // Sets default values
 ABaseDoor::ABaseDoor()
@@ -32,6 +31,7 @@ void ABaseDoor::BeginPlay()
 
 	meshDoor->SetSimulatePhysics(isOpen);
 	physicsConstrain->SetConstrainedComponents(meshPivot, TEXT("Pivot Mesh"), meshDoor, TEXT("Door Mesh"));
+	canBeLocked = true;
 
 }
 
@@ -39,6 +39,18 @@ void ABaseDoor::BeginPlay()
 void ABaseDoor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	if(isOpen)
+	{
+		if(doOnceSwing)
+		{
+			prevSwing = physicsConstrain->GetCurrentSwing1();
+			doOnceSwing = false;
+		}
+		
+		currentSwing = physicsConstrain->GetCurrentSwing1();
+		(currentSwing >=  prevSwing - 1.5f && currentSwing <=  prevSwing + 1.5f) ? canBeLocked = true : canBeLocked = false;
+	}
 
 }
 
@@ -50,9 +62,10 @@ FName ABaseDoor::TryAccessToDoor()
 }
 
 // Method that handle the door mechanic.
-void ABaseDoor::OpenDoor()
+void ABaseDoor::ActionDoor(bool action)
 {
-	isOpen = true;
+	isOpen = action;
+	doOnceSwing = isOpen;
 	meshDoor->SetSimulatePhysics(isOpen);
 
 }
@@ -61,5 +74,11 @@ void ABaseDoor::OpenDoor()
 bool ABaseDoor::IsDoorOpen()
 {
 	return isOpen;
+
+}
+
+bool ABaseDoor::CanDoorBeLocked()
+{
+	return canBeLocked;
 
 }

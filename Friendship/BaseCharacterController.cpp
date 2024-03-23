@@ -3,7 +3,6 @@
 
 #include "BaseCharacterController.h"
 #include "GameFramework/PlayerInput.h"
-#include "BaseCharacter.h"
 #include "Engine.h"
 
 //BeginPlay defines the initial value of the funtion pointers, this pointers define the behaviour of the movement.

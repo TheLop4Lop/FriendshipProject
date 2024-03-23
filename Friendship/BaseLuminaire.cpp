@@ -16,6 +16,9 @@ ABaseLuminaire::ABaseLuminaire()
 	lightType = CreateDefaultSubobject<URectLightComponent>(TEXT("Luminarie"));
 	lightType->SetupAttachment(luminarieMesh);
 
+	supportLightType = CreateDefaultSubobject<URectLightComponent>(TEXT("Support Luminarie"));
+	supportLightType ->SetupAttachment(luminarieMesh);
+
 }
 
 // Called when the game starts or when spawned
@@ -23,6 +26,7 @@ void ABaseLuminaire::BeginPlay()
 {
 	Super::BeginPlay();
 
+	SetLigthing(isLightOn);
 	lightPrevState = isLightOn;
 	
 }

@@ -51,10 +51,6 @@ public:
 	// Method that modify the quantity of MAX ansiety, this change with Darkness or another anxiety mechanic.
 	void ProportionalAnxietyHandle(float newStamina);
 
-	// Methods that handle in public increace and decreace anxiety on TriggerLuminare Class.
-	void IncreaseAnxietyOnCharacter();
-	// Change boolean condition values to access relax mechanic.
-	void SetConditionsToRelax(bool relax);
 	// Returns the current anxiety period.
 	float GetAnxietyPeriod();
 	// Returns the current anxiety level.
@@ -72,7 +68,7 @@ private:
 	// Player's controller.
 	class ABaseCharacterController* characterController;
 
-	////////////////////////////////////////////// WIDGET SECTION //////////////////////////////////////////////
+	////////////////////////////////////////////// MAIN WIDGET SECTION //////////////////////////////////////////////
 	// This section contains properties and methods related to character's Widget.
 
 	// Widget subclass, contains reference to main interaction Widget.
@@ -88,9 +84,9 @@ private:
 	////////////////////////////////////////////// MOVEMENT SECTION //////////////////////////////////////////////
 	// This section contains properties and methods related to character movement and control.
 
-	// Walk speed of movement on character.
+	// Walk speed of movement on character. This is determined by Character Movement.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movement", meta = (AllowPrivateAccess))
-    float WalkSpeed = 600.0f;
+    float WalkSpeed;
 
 	// Sprint speed of movement on character.
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movement", meta = (AllowPrivateAccess))
@@ -103,10 +99,6 @@ private:
 	// Controller X Axis sensibility rate.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movement", meta = (AllowPrivateAccess))
     float xAxisRate = 5.0f;
-
-	// Sound effect for character steps.
-	UPROPERTY(EditAnywhere, Category = "Character Movement", meta = (AllowPrivateAccess))
-	USoundBase* stepsSound;
 
 	// Method that manage the spring mechanic.
 	void Sprint();
@@ -166,7 +158,18 @@ private:
 	// Control step state.
 	bool doOnceStep = true;
 
-	float aproximateStep;
+		// Sound effect for character steps.
+	UPROPERTY(EditAnywhere, Category = "Character Movement Sound", meta = (AllowPrivateAccess))
+	USoundBase* stepsSound;
+
+	// Sound interval of steps while walking.
+	UPROPERTY(EditAnywhere, Category = "Character Movement Sound", meta = (AllowPrivateAccess))
+	float aproximateWalkStep = 0.598f; // Calculated, but needs improvement.
+
+	// Sound interval of steps while sprinting.
+	UPROPERTY(EditAnywhere, Category = "Character Movement Sound", meta = (AllowPrivateAccess))
+	float aproximateSprintStep = 0.3588f; // Calculated, but needs improvement.
+
 	// Set steps duration.
 	void SetStepDuration(float duration);
 	// Test function for steps functionality.
@@ -202,6 +205,8 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Anxiety Mechanic", meta = (AllowPrivateAccess))
 	USoundBase* heartSound;
 
+	// Sets initial conditions to manage the increasing on anxiety.
+	void SetIncreaseAnxiety();
 	// Methods than manage the anxiety increasing value.
 	void IncreaseAnxiety();
 	// Sets initial conditions to manage the reduction on anxiety.
@@ -228,8 +233,24 @@ private:
 	// Plays Heartbeat sound.
 	void CheckAndPlayHeartSound();
 
+	////////////////////////////////////////////// LIGHT ANXIETY SECTION //////////////////////////////////////////////
+	// This section contains properties and methods related to character anxiety mechanic.
+
+	// Holds the value of the worlds Light controller sub levels.
+	class ALightController* worldLightController;
+
+	// Sets the worldLightController Bind function
+	void SetLightControllerBind();	
+
+	// Sets CanRelax Conditions, this is managed if character is on axneity zone.
+	void SetCanRelax(bool relaxCondition);
+
 	////////////////////////////////////////////// INTERACTION SECTION //////////////////////////////////////////////
 	// This section contains properties and methods related to character interaction mechanic.
+
+	// Determines how big is the sphere collision actor, this interact with the world very frame.
+	UPROPERTY(EditAnywhere, Category = "Character Interaction", meta = (AllowPrivateAccess))
+	float sphereRadius = 1.0f;
 
 	// Max throw capacity range.
 	UPROPERTY(EditAnywhere, Category = "Character Throw", meta = (AllowPrivateAccess))
@@ -306,7 +327,7 @@ private:
 
 	// Camera class, interacts with lantern and movement animation from player's controller.
 	UPROPERTY(EditAnywhere, Category = "Character Lartern", meta = (AllowPrivateAccess))
-	class UCameraComponent* characterCamera;
+	class USpringArmComponent* armComponent;
 
 	// Intensity of light from the lantern.
 	UPROPERTY(EditAnywhere, Category = "Character Lartern", meta = (AllowPrivateAccess))

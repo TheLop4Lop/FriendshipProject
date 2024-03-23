@@ -2,11 +2,13 @@
 
 #include "BaseCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Components/SpotLightComponent.h"
 #include "BaseCharacterController.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Blueprint/UserWidget.h"
+#include "LightController.h"
 #include "MainUIWidget.h"
 #include "TakeableKey.h"
 #include "DoorWidget.h"
@@ -18,11 +20,11 @@ ABaseCharacter::ABaseCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-    characterCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Character Camera"));
-    characterCamera->SetupAttachment(GetMesh());
+    armComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
+    armComponent->SetupAttachment(GetMesh());
 
     lantern = CreateDefaultSubobject<USpotLightComponent>(TEXT("Character Lantern"));
-    lantern->SetupAttachment(characterCamera);
+    lantern->SetupAttachment(armComponent);
 
 }
 
@@ -30,7 +32,11 @@ ABaseCharacter::ABaseCharacter()
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+    worldLightController = Cast<ALightController>(UGameplayStatics::GetActorOfClass(GetWorld(), ALightController::StaticClass()));
     characterController = Cast<ABaseCharacterController>(GetController());
+    SetLightControllerBind();
+
+    WalkSpeed = GetCharacterMovement()->GetMaxSpeed();
 
 	ProportionalAnxietyHandle(maxStaminaByAnxiety);
 	movementFunction1 = &ABaseCharacter::MoveForward;
@@ -44,6 +50,7 @@ void ABaseCharacter::BeginPlay()
 
     SetWidgetInteractionClass();
     SetLanternIntensity(ZeroVal);
+    doOnceRelax = true;
     canRelax = true;
 
 }
@@ -56,6 +63,7 @@ void ABaseCharacter::Tick(float DeltaTime)
     SetGetActorToInteractInTheWorldWidget();
     SetCameraActionMovement();
 
+    SetIncreaseAnxiety();
     SetReduceAnxiety();
     SetHeartSound();
 
@@ -97,7 +105,7 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 }
 
-////////////////////////////////////////////// WIDGET SECTION //////////////////////////////////////////////
+////////////////////////////////////////////// MAIN WIDGET SECTION //////////////////////////////////////////////
 // This section contains properties and methods related to character's Widget.
 
 // Method that implements Widget Class.
@@ -127,9 +135,7 @@ void ABaseCharacter::Sprint()
     {
         GetCharacterMovement()->MaxWalkSpeed = FMath::FInterpTo(SprintSpeed, WalkSpeed, GetWorld()->DeltaTimeSeconds, InterpMin);
         isSprinting = true;
-
-        GetWorldTimerManager().ClearTimer(timeHandle);
-        GetWorldTimerManager().SetTimer(timeHandle, this, &ABaseCharacter::IncreaseAnxiety, anxietyPeriod, isSprinting);
+        doOnceRelax = true;
     }
 
 }
@@ -141,7 +147,7 @@ void ABaseCharacter::Walk()
     {
         GetCharacterMovement()->MaxWalkSpeed = FMath::FInterpTo(WalkSpeed, SprintSpeed, GetWorld()->DeltaTimeSeconds, InterpMax);
         isSprinting = false;
-        doOnceRelax = true;
+        doOnceRelax = false;
     }
 	
 }
@@ -289,14 +295,12 @@ void ABaseCharacter::SetCameraActionMovement()
         {
             characterController->SetCamerastateMovement(ECameraMovement::WALKING);
 
-            aproximateStep = 0.598f; // Calculated, but needs improvement.
-            SetStepDuration(aproximateStep);
+            SetStepDuration(aproximateWalkStep);
         }else if(isSprinting || anxietyLevel > MaxAnxiety/2)
         {
             characterController->SetCamerastateMovement(ECameraMovement::SPRINTING);
 
-            aproximateStep = 0.3588f; // Calculated, but needs improvement.
-            SetStepDuration(aproximateStep);
+            SetStepDuration(aproximateSprintStep);
         }
     }
 
@@ -307,7 +311,7 @@ void ABaseCharacter::SetStepDuration(float duration)
     if(stepsSound && doOnceStep)
     {
         GetWorldTimerManager().ClearTimer(timeStep);
-        GetWorldTimerManager().SetTimer(timeStep, this, &ABaseCharacter::PlayStepSound, duration, doOnceStep);////////////////////////////
+        GetWorldTimerManager().SetTimer(timeStep, this, &ABaseCharacter::PlayStepSound, duration, doOnceStep);
         
         doOnceStep = false;
     }
@@ -324,6 +328,19 @@ void ABaseCharacter::PlayStepSound()
 
 ////////////////////////////////////////////// ANXIETY SECTION //////////////////////////////////////////////
 // This section contains properties and methods related to character anxiety mechanic.
+
+// Sets initial conditions to manage the reduction on anxiety.
+void ABaseCharacter::SetIncreaseAnxiety()
+{
+    if(doOnceRelax && !canRelax || doOnceRelax && isSprinting)
+    {
+        GetWorldTimerManager().ClearTimer(timeHandle);
+        GetWorldTimerManager().SetTimer(timeHandle, this, &ABaseCharacter::IncreaseAnxiety, anxietyPeriod, !canRelax || isSprinting);
+
+        doOnceRelax = false;
+    }
+
+}
 
 // Methods than control the characters Anxiety
 void ABaseCharacter::IncreaseAnxiety()
@@ -350,12 +367,12 @@ void ABaseCharacter::IncreaseAnxiety()
 // Sets initial conditions to manage the reduction on anxiety.
 void ABaseCharacter::SetReduceAnxiety()
 {
-    if(anxietyLevel != ZeroVal && !isSprinting && canRelax && doOnceRelax) // in a fuucntion
+    if(anxietyLevel != ZeroVal && !isSprinting && canRelax && !doOnceRelax)
     {
         GetWorldTimerManager().ClearTimer(timeHandle);
         GetWorldTimerManager().SetTimer(timeHandle, this, &ABaseCharacter::ReduceAnxiety, anxietyPeriod, anxietyLevel != ZeroVal);
 
-        doOnceRelax = false;
+        doOnceRelax = true;
     }
 
 }
@@ -393,43 +410,6 @@ void ABaseCharacter::ProportionalAnxietyHandle(float newStamina)
 
 }
 
-// Methods that handle in public increace and decreace anxiety on TriggerLuminare Class.
-void ABaseCharacter::IncreaseAnxietyOnCharacter()
-{
-    GetWorldTimerManager().ClearTimer(timeHandle);
-    IncreaseAnxiety();
-
-}
-
-// Change boolean condition values to access relax mechanic.
-void ABaseCharacter::SetConditionsToRelax(bool relax)
-{
-    canRelax = relax;
-    doOnceRelax = canRelax;
-
-}
-
-// Returns the current anxiety period.
-float ABaseCharacter::GetAnxietyPeriod()
-{
-    return anxietyPeriod;
-
-}
-
-// Returns the current anxiety level.
-float ABaseCharacter::GetAnxietyLevel()
-{
-    return anxietyLevel;
-
-}
-
-// Returns wether or not the player is sprinting.
-bool ABaseCharacter::isCharacterSptinting()
-{
-    return isSprinting;
-
-}
-
 // Sets initial condition to call heartbeat.
 void ABaseCharacter::SetHeartSound()
 {
@@ -463,6 +443,47 @@ void ABaseCharacter::CheckAndPlayHeartSound()
     {
         UE_LOG(LogTemp, Warning, TEXT("No Sound to play for heartSound!"));
     }
+
+}
+
+// Returns the current anxiety period.
+float ABaseCharacter::GetAnxietyPeriod()
+{
+    return anxietyPeriod;
+
+}
+
+// Returns the current anxiety level.
+float ABaseCharacter::GetAnxietyLevel()
+{
+    return anxietyLevel;
+
+}
+
+// Returns wether or not the player is sprinting.
+bool ABaseCharacter::isCharacterSptinting()
+{
+    return isSprinting;
+
+}
+
+////////////////////////////////////////////// LIGHT ANXIETY SECTION //////////////////////////////////////////////
+// This section contains properties and methods related to character anxiety mechanic.
+
+// Sets the worldLightController Bind function
+void ABaseCharacter::SetLightControllerBind()
+{
+    if(worldLightController)
+    {
+        worldLightController->currentOvelap.BindUObject(this, &ABaseCharacter::SetCanRelax);
+    }
+
+}
+
+// Sets CanRelax Conditions, this is managed if character is on axneity zone.
+void ABaseCharacter::SetCanRelax(bool relaxCondition)
+{
+    canRelax = relaxCondition;
 
 }
 
@@ -587,7 +608,7 @@ FString ABaseCharacter::GetInteractionText()
         }
     }else if(currentDoor)
     {
-        currentDoor->IsDoorOpen()? interactionText = interactionText = TEXT("CLOSE door.") : interactionText = TEXT("OPEN door.");
+        currentDoor->IsDoorOpen()? interactionText = interactionText = TEXT("LOCK door.") : interactionText = TEXT("UNLOCK door.");
     }
 
     return interactionText;
@@ -609,7 +630,6 @@ AActor* ABaseCharacter::ActorTargetByLineTrace(FHitResult& result, float& range)
         UE_LOG(LogTemp, Warning, TEXT("NULL value on characterController."));
     }
 
-    float sphereRadius = 1.0f;
     FCollisionShape sphere = FCollisionShape::MakeSphere(sphereRadius);
     FCollisionQueryParams params;
     params.AddIgnoredActor(this);
@@ -652,7 +672,7 @@ void ABaseCharacter::TakeObject()
         }
 
         pickableActor->DestroyTakeable();
-    }else if(currentDoor && doorWidgetClass)
+    }else if(currentDoor && doorWidgetClass && currentDoor->CanDoorBeLocked())
     {
         doorWidget = Cast<UDoorWidget>(CreateWidget(characterController, doorWidgetClass));
         if(doorWidget && characterController)
@@ -668,7 +688,7 @@ void ABaseCharacter::TakeObject()
         }
     }else
     {
-         UE_LOG(LogTemp, Warning, TEXT("No Actor to interact in sight."));
+        SituationDialog("Door needs to be closed to lock it.");
     }
 
 }
@@ -809,7 +829,7 @@ void ABaseCharacter::ReturnToGameplaySettings()
     {
         if(doorWidget->CanOpenDoor() && currentDoor)
         {
-            currentDoor->OpenDoor();
+            currentDoor->IsDoorOpen() ? currentDoor->ActionDoor(false) : currentDoor->ActionDoor(true);
         }
         doorWidget->RemoveFromParent();
     }
