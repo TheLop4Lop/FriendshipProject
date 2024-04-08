@@ -33,11 +33,7 @@ protected:
 
 	// Luminarie type to be edited.
 	UPROPERTY(EditAnywhere, Category = "Luminarie Properties", meta = (AllowPrivateAccess))
-	class URectLightComponent* lightType;
-
-	// Luminarie type to be edited.
-	UPROPERTY(EditAnywhere, Category = "Luminarie Properties", meta = (AllowPrivateAccess))
-	class URectLightComponent* supportLightType;
+	class UPointLightComponent* lightType;
 
 	// Control light state.
 	UPROPERTY(EditAnywhere, Category = "Luminarie Properties", meta = (AllowPrivateAccess))

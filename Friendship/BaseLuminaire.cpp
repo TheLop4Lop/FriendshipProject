@@ -2,7 +2,7 @@
 
 
 #include "BaseLuminaire.h"
-#include "Components/RectLightComponent.h"
+#include "Components/PointLightComponent.h"
 
 // Sets default values
 ABaseLuminaire::ABaseLuminaire()
@@ -13,11 +13,8 @@ ABaseLuminaire::ABaseLuminaire()
 	luminarieMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Luminarie Mesh"));
 	luminarieMesh->SetupAttachment(RootComponent);
 
-	lightType = CreateDefaultSubobject<URectLightComponent>(TEXT("Luminarie"));
+	lightType = CreateDefaultSubobject<UPointLightComponent>(TEXT("Luminarie"));
 	lightType->SetupAttachment(luminarieMesh);
-
-	supportLightType = CreateDefaultSubobject<URectLightComponent>(TEXT("Support Luminarie"));
-	supportLightType ->SetupAttachment(luminarieMesh);
 
 }
 
