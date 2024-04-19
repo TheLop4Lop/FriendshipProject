@@ -96,20 +96,20 @@ void ABaseCharacterController::ManageMouseAnxiety()
     float mouseX, mouseY;
     GetMousePosition(mouseX, mouseY);
 
-    float mouseRateX = FMath::RandRange(-1.0f, 1.0f);
-    float mouseRateY = FMath::RandRange(-1.0f, 1.0f);
+    FVector2D mouseDirection = (mouseTarget - FVector2D(mouseX, mouseY)).GetSafeNormal();
 
     const float MovementScale = 0.1f;
-    mouseX += mouseRateX * MovementScale;
-    mouseY += mouseRateY * MovementScale;
+    mouseX += mouseDirection.X * MovementScale;
+    mouseY += mouseDirection.Y * MovementScale;
 
-    const float ScreenWidth = 1920; 
-    const float ScreenHeight = 1080; 
-    mouseX = FMath::Clamp(mouseX, mousePositionX, ScreenWidth);
-    mouseY = FMath::Clamp(mouseY, mousePositionY, ScreenHeight);
+    const float ScreenWidth = 1920;
+    const float ScreenHeight = 1080;
+    const float zero = 0.0f;
+    mouseX = FMath::Clamp(mouseX, zero, ScreenWidth);
+    mouseY = FMath::Clamp(mouseY, zero, ScreenHeight);
 
     SetMouseLocation(mouseX, mouseY);
-
+    
     doOnceAnxiety = true;
 
 }

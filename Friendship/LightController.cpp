@@ -21,6 +21,8 @@ void ALightController::BeginPlay()
 	TArray<AActor*> actorsInWorld;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATriggerLuminaire::StaticClass(), actorsInWorld);
 	
+	UE_LOG(LogTemp, Display, TEXT("Light Actors in world: %i"), actorsInWorld.Num());
+
 	for(AActor* singleActor : actorsInWorld)
 	{
 		ATriggerLuminaire* luminaire = Cast<ATriggerLuminaire>(singleActor);

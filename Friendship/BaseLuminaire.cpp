@@ -53,3 +53,9 @@ void ABaseLuminaire::SetLigthing(bool light)
 	}
 
 }
+
+void ABaseLuminaire::SetLuminaireVisibility(bool bVisibility)
+{
+	this->SetActorHiddenInGame(bVisibility);
+
+}

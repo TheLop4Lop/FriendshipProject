@@ -23,6 +23,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable)
+	void SetLuminaireVisibility(bool bVisibility);
+
 protected:
 	////////////////////////////////////////////// LIGHT SECTION //////////////////////////////////////////////
 	// This section contains properties and methods related to Light behaviour.
@@ -51,6 +54,6 @@ protected:
 	bool lightPrevState;
 
 	// Set the light intensity by the actor.
-	void SetLigthing(bool light);
+	virtual void SetLigthing(bool light);
 
 };

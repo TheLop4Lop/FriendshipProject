@@ -67,10 +67,7 @@ protected:
 	float mouseAnxietyRate = 10.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Mouse Rate Movement", meta = (AllowPrivateAccess))
-	float mousePositionX = 150.0f;
-
-	UPROPERTY(EditAnywhere, Category = "Mouse Rate Movement", meta = (AllowPrivateAccess))
-	float mousePositionY = 90.0f;
+	FVector2D mouseTarget;
 
 	// Holds the anxiety on player when starts interaction with widget.
 	float anxietyOnPlayer;

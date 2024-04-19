@@ -686,9 +686,12 @@ void ABaseCharacter::TakeObject()
             DisableInput(characterController);
             characterController->SetMouseConfigurationEvents(true, anxietyLevel);
         }
-    }else
+    }else if(currentDoor && doorWidgetClass)
     {
         SituationDialog("Door needs to be closed to lock it.");
+    }else
+    {
+        SituationDialog("Nothing to interect with.");
     }
 
 }
