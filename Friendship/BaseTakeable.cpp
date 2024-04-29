@@ -11,7 +11,7 @@ ABaseTakeable::ABaseTakeable()
 	PrimaryActorTick.bCanEverTick = true;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	Mesh->SetupAttachment(RootComponent);
+	SetRootComponent(Mesh);
 
 }
 

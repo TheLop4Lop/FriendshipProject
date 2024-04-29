@@ -8,6 +8,7 @@
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Blueprint/UserWidget.h"
+#include "ThrowableProjectile.h"
 #include "LightController.h"
 #include "MainUIWidget.h"
 #include "TakeableKey.h"
@@ -25,6 +26,9 @@ ABaseCharacter::ABaseCharacter()
 
     lantern = CreateDefaultSubobject<USpotLightComponent>(TEXT("Character Lantern"));
     lantern->SetupAttachment(armComponent);
+
+    spawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Spawn Location"));
+    spawnPoint->SetupAttachment(RootComponent);
 
 }
 
@@ -523,17 +527,21 @@ void ABaseCharacter::ThrowProjectile()
 {
     if(isAiming)
     {
-        float damageIn = 2.0; //This may change after implementing throable class.
-        if(actorInSight)
+        if(throwableQuantity != Zero && projectileClass)
         {
-            if(actorInSight && actorInSight->ActorHasTag(TagDestroyableActor))
-            {
-                FPointDamageEvent DamageEven(damageIn, Hit, actorInSight->GetActorLocation(), nullptr);
-                actorInSight->TakeDamage(damageIn, DamageEven, characterController, this);
-            }
-        }else
+            FVector throwableLocation = spawnPoint->GetComponentLocation();
+            FRotator throwableRotation = lantern->GetComponentRotation(); // Make it better.
+
+            FActorSpawnParameters params;
+            params.Instigator = this;
+
+            AThrowableProjectile* throwable = GetWorld()->SpawnActor<AThrowableProjectile>(projectileClass, throwableLocation, throwableRotation, params);
+            throwable->SetOwner(this);
+
+            throwableQuantity--;
+        }else 
         {
-            UE_LOG(LogTemp, Warning, TEXT("actorInSight has a NULL value."));
+            SituationDialog("I have nothing to throw...");
         }
     }
 
@@ -664,7 +672,7 @@ void ABaseCharacter::TakeObject()
             break;
 
             case ETakeableType::THROWABLE:
-            thowableQuantity += pickableActor->GetQuanityOfTakeable();
+            throwableQuantity += pickableActor->GetQuanityOfTakeable();
             break;
         
         default:

@@ -248,6 +248,13 @@ private:
 	////////////////////////////////////////////// INTERACTION SECTION //////////////////////////////////////////////
 	// This section contains properties and methods related to character interaction mechanic.
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Interaction", meta = (AllowPrivateAccess))
+	USceneComponent* spawnPoint;
+
+	//Subclass for allocate a UClass, this to comunicate blueprints with code. I this case a BP_AProjectile class
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	TSubclassOf<class AThrowableProjectile> projectileClass;
+
 	// Determines how big is the sphere collision actor, this interact with the world very frame.
 	UPROPERTY(EditAnywhere, Category = "Character Interaction", meta = (AllowPrivateAccess))
 	float sphereRadius = 1.0f;
@@ -309,7 +316,7 @@ private:
 
 	// Quantity of throables the player has taken from the world.
 	UPROPERTY(EditAnywhere, Category = "Character Inventory", meta = (AllowPrivateAccess))
-	int thowableQuantity;
+	int throwableQuantity;
 
 	// Quantity of keys the player has taken from the world, each of them only open one door.
 	UPROPERTY(EditAnywhere, Category = "Character Inventory", meta = (AllowPrivateAccess))
