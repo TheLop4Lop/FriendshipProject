@@ -44,4 +44,6 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "AI Perception", meta = (AllowPrivateAccess))
 	class UAIPerceptionComponent* AIPerception;
 
+	
+
 };

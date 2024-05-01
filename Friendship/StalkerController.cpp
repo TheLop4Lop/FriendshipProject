@@ -27,7 +27,6 @@ void AStalkerController::BeginPlay()
     AIPerception = FindComponentByClass<UAIPerceptionComponent>();
     if(AIPerception)
     {
-        UE_LOG(LogTemp, Display, TEXT("UAIPerceptionComponent FOUND!"));
         FAISenseID SenseIDSight = UAISense::GetSenseID<UAISense_Sight>(); // Gets the Sight sense ID for AiPerception config.
         Sight = Cast<UAISenseConfig_Sight>(AIPerception->GetSenseConfig(SenseIDSight)); // Gets the acual SenseConfigClass, with this perception can be modified.
         if(Sight)
@@ -52,6 +51,12 @@ void AStalkerController::Tick(float DeltaTime)
 
 void AStalkerController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 {
-    UE_LOG(LogTemp, Display, TEXT("Character on Sight!"));
+    if(AIBehavior)
+    {
+        bool inSight;
+        
+        (Stimulus.WasSuccessfullySensed()) ? inSight = true : inSight = false;
+        GetBlackboardComponent()->SetValueAsBool(TEXT("PlayerInSight"), inSight);
+    }
 
 }

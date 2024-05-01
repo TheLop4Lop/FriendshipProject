@@ -26,4 +26,15 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	// Retrieve the hideout points on the map.
+	TArray<class ATargetPoint*> GetHideoutPoints();
+
+protected:
+	////////////////////////////////////////////// AI PROPERTIES SECTION //////////////////////////////////////////////
+	// This section contains properties related to AI mechanics.
+
+	// Stores the hideout points on the map.
+	UPROPERTY(EditAnywhere, Category = "AI Movement", meta = (AllowPrivateAccess))
+	TArray<class ATargetPoint*> hideoutPoints;
+
 };

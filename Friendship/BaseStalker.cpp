@@ -32,3 +32,8 @@ void ABaseStalker::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 }
 
+TArray<class ATargetPoint*> ABaseStalker::GetHideoutPoints()
+{
+    return hideoutPoints;
+
+}
