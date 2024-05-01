@@ -14,6 +14,7 @@ UBTTask_GetHideoutPoint::UBTTask_GetHideoutPoint()
 
 }
 
+// ExcecuteTask funtion, manages to find the the closest hideout point for the Stalker.
 EBTNodeResult::Type UBTTask_GetHideoutPoint::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
     Super::ExecuteTask(OwnerComp, NodeMemory);
