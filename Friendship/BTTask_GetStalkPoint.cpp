@@ -1,20 +1,21 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BTTask_GetHideoutPoint.h"
+#include "BTTask_GetStalkPoint.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Engine/TargetPoint.h"
 #include "StalkerController.h"
 #include "BaseStalker.h"
 
-UBTTask_GetHideoutPoint::UBTTask_GetHideoutPoint()
+UBTTask_GetStalkPoint::UBTTask_GetStalkPoint()
 {
-    NodeName = TEXT("Get Hideout Point");
+    NodeName = TEXT("Get Stalk Point");
 
 }
 
-// ExcecuteTask funtion, manages to find the the closest hideout point for the Stalker.
-EBTNodeResult::Type UBTTask_GetHideoutPoint::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+// ExcecuteTask funtion, manages to find the the closest stalk point for the Stalker.
+EBTNodeResult::Type UBTTask_GetStalkPoint::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
     Super::ExecuteTask(OwnerComp, NodeMemory);
 
@@ -29,23 +30,23 @@ EBTNodeResult::Type UBTTask_GetHideoutPoint::ExecuteTask(UBehaviorTreeComponent&
         return EBTNodeResult::Failed;
     }
     
-    if(stalker->GetHideoutPoints().Num() > 0)
+    if(stalker->GetStalkerPoints().Num() > 0)
     {
         FVector distanceDifference = FVector(FLT_MAX, FLT_MAX, FLT_MAX);
         ATargetPoint* closerPoint = nullptr;
-        for(int i = 0; i < stalker->GetHideoutPoints().Num(); i++)
+        for(int i = 0; i < stalker->GetStalkerPoints().Num(); i++)
         {
-            FVector currentDistance = (stalker->GetActorLocation() - stalker->GetHideoutPoints()[i]->GetActorLocation());
+            FVector currentDistance = (stalker->GetActorLocation() - stalker->GetStalkerPoints()[i]->GetActorLocation());
             if(currentDistance.Size() < distanceDifference.Size())
             {
                 distanceDifference = currentDistance;
-                closerPoint = stalker->GetHideoutPoints()[i];
+                closerPoint = stalker->GetStalkerPoints()[i];
             }        
         }
 
         if(closerPoint)
         {
-            OwnerComp.GetBlackboardComponent()->SetValueAsVector(TEXT("HideoutPoint"), closerPoint->GetActorLocation());
+            OwnerComp.GetBlackboardComponent()->SetValueAsVector(TEXT("StalkPoint"), closerPoint->GetActorLocation());
             return EBTNodeResult::Succeeded;
         }
     }

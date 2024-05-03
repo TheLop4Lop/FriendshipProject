@@ -2,6 +2,7 @@
 
 
 #include "BaseStalker.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 ABaseStalker::ABaseStalker()
@@ -32,8 +33,25 @@ void ABaseStalker::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 }
 
+// Sets the colission condition and hidden state of the character.
+void ABaseStalker::SetCharacterVisibility(bool bVisibility)
+{
+	SetActorHiddenInGame(bVisibility);
+	(bVisibility)? GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision) 
+					: GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
+}
+
+// Retrieve the hideout points on the map.
 TArray<class ATargetPoint*> ABaseStalker::GetHideoutPoints()
 {
     return hideoutPoints;
+
+}
+
+// Retrieve the stalker points on the map.
+TArray<class ATargetPoint*> ABaseStalker::GetStalkerPoints()
+{
+	return stalkerPoints;
 
 }

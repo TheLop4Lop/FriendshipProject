@@ -26,8 +26,14 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	// Sets the colission condition and hidden state of the character.
+	void SetCharacterVisibility(bool bVisibility);
+
 	// Retrieve the hideout points on the map.
 	TArray<class ATargetPoint*> GetHideoutPoints();
+
+	// Retrieve the stalker points on the map.
+	TArray<class ATargetPoint*> GetStalkerPoints();
 
 protected:
 	////////////////////////////////////////////// AI PROPERTIES SECTION //////////////////////////////////////////////
@@ -36,5 +42,9 @@ protected:
 	// Stores the hideout points on the map.
 	UPROPERTY(EditAnywhere, Category = "AI Movement", meta = (AllowPrivateAccess))
 	TArray<class ATargetPoint*> hideoutPoints;
+
+	// Stores the stalker points on the map.
+	UPROPERTY(EditAnywhere, Category = "AI Movement", meta = (AllowPrivateAccess))
+	TArray<class ATargetPoint*> stalkerPoints;
 
 };
