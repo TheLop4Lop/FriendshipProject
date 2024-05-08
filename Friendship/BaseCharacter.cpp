@@ -739,6 +739,15 @@ bool ABaseCharacter::HasKeyToOpenDoor(FName door)
 
 }
 
+// Returns the tag of the last key picked on the level.
+FName ABaseCharacter::LastPickedKey()
+{
+    if(keyTags.Num() > Zero) return keyTags.Last();
+
+    return FName();
+
+}
+
 ////////////////////////////////////////////// LANTERN SECTION //////////////////////////////////////////////
 // This section contains properties and methods related to character lantern mechanic.
 

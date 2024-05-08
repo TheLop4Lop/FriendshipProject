@@ -49,7 +49,7 @@ void UMainUIWidget::UpdateAnxiety(float value)
 
 }
 
-// Set the opacity, this depends if character is sprinting ot not.
+// Set the Bar opacity, this depends if character is sprinting ot not.
 void UMainUIWidget::SetAnxietyBarOpacity(float opacity)
 {
     if(anxietyBar && relaxedText && anxietyText)
@@ -64,7 +64,7 @@ void UMainUIWidget::SetAnxietyBarOpacity(float opacity)
 
 }
 
-// Set the opacity, this depends if character is aiming ot not.
+// Set the Noise opacity, this depends if character is sprinting ot not.
 void UMainUIWidget::SetAnxietyNoiseOpacity(float opacity)
 {
     if(anxietyNoise)

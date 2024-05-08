@@ -4,18 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "LightController.generated.h"
-
-DECLARE_DELEGATE_OneParam(FLightOverlap, bool);
+#include "DoorController.generated.h"
 
 UCLASS()
-class FRIENDSHIP_API ALightController : public AActor
+class FRIENDSHIP_API ADoorController : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ALightController();
+	ADoorController();
 
 protected:
 	// Called when the game starts or when spawned
@@ -25,17 +23,12 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	FLightOverlap currentOvelap;
-
 protected:
-	////////////////////////////////////////////// LIGHT CONTROLLER PPROPERTIES SECTION //////////////////////////////////////////////
-	// This section contains properties and methods related to LightController class.
+	////////////////////////////////////////////// DOOR ACTORS SECTION //////////////////////////////////////////////
+	// This section contains properties and methods related to BaseDoor class actors in the world.
 
-	// Holds all instances of TriggerLuminare on the world.
-	TArray<class ATriggerLuminaire*> luminaireOnWorld;
-
-	// Holds a pointer to the current overlapped Luminaire by the player.
-	class ATriggerLuminaire* currentOvelappedLuminaire;
+	// Holds all the doors in the world.
+	TArray<class ABaseDoor*> allDoors;
 
 	////////////////////////////////////////////// PROGRESS MANAGER SECTION //////////////////////////////////////////////
 	// This section contains properties and methods related to ProgressEventManager class.
@@ -44,6 +37,6 @@ protected:
 	class AProgressEventManager* manager;
 
 	// Method binded by multicast delegate from AProgressEventManager class
-	void ChangeLightStatusEvent(FName lastKey, bool newStatus);
+	void ChangeDoorStatusEvent(FName lastKey, bool newStatus);
 
 };

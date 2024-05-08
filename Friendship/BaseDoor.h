@@ -62,10 +62,14 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Actor Mesh", meta = (AllowPrivateAccess))
 	class UPhysicsConstraintComponent* physicsConstrain;
 
+	// Controll bool for Lock status.
 	bool canBeLocked;
+	// Controll bool for Swing status.
 	bool doOnceSwing;
 
+	// Holds the value of current swing.
 	float currentSwing;
+	// Holds the value of prev swing.
 	float prevSwing;
 
 };

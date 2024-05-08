@@ -23,8 +23,12 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// Method in charge of actor visibility, due to reduce resources on gameplay.
 	UFUNCTION(BlueprintCallable)
 	void SetLuminaireVisibility(bool bVisibility);
+
+	// Method handle the change of light status.
+	void ChangeLight(bool lightStatus);
 
 protected:
 	////////////////////////////////////////////// LIGHT SECTION //////////////////////////////////////////////

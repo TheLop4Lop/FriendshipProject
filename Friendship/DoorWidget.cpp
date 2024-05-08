@@ -138,12 +138,14 @@ void UDoorWidget::DoorKnobPressed()
 
 }
 
+// Manages when respective button key is pressed, exits.
 void UDoorWidget::ExitPressed()
 {
     exitEvent.ExecuteIfBound();
 
 }
 
+// Opens door from BaseCharacter.
 bool UDoorWidget::CanOpenDoor()
 {
     return bIsOpen;

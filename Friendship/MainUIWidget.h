@@ -23,8 +23,9 @@ protected:
 public: 
 	// Method to control Bar and text indicator, helps the player know the quantity of anxiety while playing.
 	void UpdateAnxiety(float value);
-	// Set the opacity, this depends if character is sprinting ot not.
+	// Set the Bar opacity, this depends if character is sprinting ot not.
 	void SetAnxietyBarOpacity(float opacity);
+	// Set the Noise opacity, this depends if character is sprinting ot not.
 	void SetAnxietyNoiseOpacity(float opacity);
 
 	// Set the opacity, this depends if character is aiming or not.

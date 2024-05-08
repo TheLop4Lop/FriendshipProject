@@ -38,6 +38,7 @@ protected:
 	UFUNCTION() 
 	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 	
+	// Method in charge of Actors "life" on hit.
 	void ManageThrowableDurability();
 
 };

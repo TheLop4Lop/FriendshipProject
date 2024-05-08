@@ -3,7 +3,6 @@
 
 #include "BTTask_GetStalkPoint.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Kismet/GameplayStatics.h"
 #include "Engine/TargetPoint.h"
 #include "StalkerController.h"
 #include "BaseStalker.h"

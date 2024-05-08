@@ -91,6 +91,7 @@ void ABaseCharacterController::StartCameraMovement()
 
 }
 
+// Method that handles the Anxiety mouse movement event while interacting with door widget.
 void ABaseCharacterController::ManageMouseAnxiety()
 {
     float mouseX, mouseY;

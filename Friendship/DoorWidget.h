@@ -77,7 +77,7 @@ protected:
 
 	// Necesary key selected to open the door.
 	FName correctKey;
-
+	// Bool open status holder.
 	bool bIsOpen;
 
 	// Color Value on hovered event.
