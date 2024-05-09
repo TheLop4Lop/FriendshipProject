@@ -62,7 +62,7 @@ void ALightController::Tick(float DeltaTime)
 }
 
 // Method binded by multicast delegate from AProgressEventManager class
-void ALightController::ChangeLightStatusEvent(FName lastKey, bool newStatus)
+void ALightController::ChangeLightStatusEvent(FName lastKey, bool& newStatus)
 {
 	for(ATriggerLuminaire* singleLuminaire : luminaireOnWorld)
 	{

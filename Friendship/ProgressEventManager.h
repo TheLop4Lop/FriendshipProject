@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "ProgressEventManager.generated.h"
 
-DECLARE_MULTICAST_DELEGATE_TwoParams(FProgressEvent, FName, bool);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FProgressEvent, FName, bool&);
 
 UCLASS()
 class FRIENDSHIP_API AProgressEventManager : public AActor
@@ -41,5 +41,29 @@ protected:
 
 	// Controls the flow of the interection.
 	bool doOnce;
+
+	////////////////////////////////////////////// MANAGER EVENT SECTION //////////////////////////////////////////////
+	// This section contains properties and methods related to ProgressEventManager events on gameplay.
+
+	// Stalker class to ve spawned when last key meets condition.
+	UPROPERTY(EditAnywhere, Category = "Events", meta = (AllowPrivateAccess))
+	TSubclassOf<class ABaseStalker> stalkerClass;
+
+	// Target points to help spawn locations through gameplay.
+	UPROPERTY(EditAnywhere, Category = "Events", meta = (AllowPrivateAccess))
+	TArray<class ATargetPoint*> spawnPoints;
+
+	// Key name needed to spawn stalker on event.
+	UPROPERTY(EditAnywhere, Category = "Events", meta = (AllowPrivateAccess))
+	TArray<FName> keySpawnEvents;
+
+	UPROPERTY(EditAnywhere, Category = "Events", meta = (AllowPrivateAccess))
+	TArray<FName> lockActorsOnMap;
+
+	// Checks the last key picked by the player and sets different conditions on gameplay.
+	void SetEventBasedOnLastKey(FName lastKey);
+
+	// Spawn Stalker on lastKey condition.
+	void SpawnStalker(FName lastKey);
 
 };

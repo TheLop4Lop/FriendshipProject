@@ -44,6 +44,6 @@ protected:
 	class AProgressEventManager* manager;
 
 	// Method binded by multicast delegate from AProgressEventManager class
-	void ChangeLightStatusEvent(FName lastKey, bool newStatus);
+	void ChangeLightStatusEvent(FName lastKey, bool& newStatus);
 
 };

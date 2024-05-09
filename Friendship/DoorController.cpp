@@ -45,7 +45,7 @@ void ADoorController::Tick(float DeltaTime)
 }
 
 // Method binded by multicast delegate from AProgressEventManager class
-void ADoorController::ChangeDoorStatusEvent(FName lastKey, bool newStatus)
+void ADoorController::ChangeDoorStatusEvent(FName lastKey, bool& newStatus)
 {
 	for(ABaseDoor* singleDoor : allDoors)
 	{
