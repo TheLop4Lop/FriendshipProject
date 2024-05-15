@@ -49,14 +49,13 @@ void AStalkerController::Tick(float DeltaTime)
 
 }
 
+// Update Stimulus related to see player character on the world.
 void AStalkerController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 {
     if(AIBehavior)
     {
-        bool inSight;
-        
-        (Stimulus.WasSuccessfullySensed()) ? inSight = true : inSight = false;
-        GetBlackboardComponent()->SetValueAsBool(TEXT("PlayerInSight"), inSight);
+        bool inSight = Stimulus.WasSuccessfullySensed();
+        if(inSight) GetBlackboardComponent()->SetValueAsBool(TEXT("bShouldHide"), true);
     }
 
 }

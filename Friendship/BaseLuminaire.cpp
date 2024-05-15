@@ -44,18 +44,21 @@ void ABaseLuminaire::Tick(float DeltaTime)
 // Set the light intensity by the actor.
 void ABaseLuminaire::SetLigthing(bool light)
 {
-	if(light)
-	{
-		lightType->SetIntensity(maxLight);
-	}else
-	{
-		lightType->SetIntensity(minLight);
-	}
+	(light)? lightType->SetIntensity(maxLight) : lightType->SetIntensity(minLight);
+	isLightOn = light;
 
 }
 
+// Method in charge of actor visibility, due to reduce resources on gameplay.
 void ABaseLuminaire::SetLuminaireVisibility(bool bVisibility)
 {
 	this->SetActorHiddenInGame(bVisibility);
+
+}
+
+// Method handle the change of light status.
+void ABaseLuminaire::ChangeLight(bool lightStatus)
+{
+	SetLigthing(lightStatus);
 
 }

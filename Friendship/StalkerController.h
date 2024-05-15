@@ -26,6 +26,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// Update Stimulus related to see player character on the world.
 	UFUNCTION()
 	void OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
 
@@ -43,7 +44,5 @@ protected:
 	// Perception component, responsable fo holding the senses of the stalker.
 	UPROPERTY(EditAnywhere, Category = "AI Perception", meta = (AllowPrivateAccess))
 	class UAIPerceptionComponent* AIPerception;
-
-	
 
 };

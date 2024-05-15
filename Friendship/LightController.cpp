@@ -3,6 +3,7 @@
 
 #include "LightController.h"
 #include "Kismet/GameplayStatics.h"
+#include "ProgressEventManager.h"
 #include "TriggerLuminaire.h"
 
 // Sets default values
@@ -20,16 +21,18 @@ void ALightController::BeginPlay()
 
 	TArray<AActor*> actorsInWorld;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATriggerLuminaire::StaticClass(), actorsInWorld);
-	
-	UE_LOG(LogTemp, Display, TEXT("Light Actors in world: %i"), actorsInWorld.Num());
-
 	for(AActor* singleActor : actorsInWorld)
 	{
-		ATriggerLuminaire* luminaire = Cast<ATriggerLuminaire>(singleActor);
-		if(luminaire)
-		{
-			luminaireOnWorld.Add(luminaire);
-		}
+		if(singleActor) luminaireOnWorld.Add(Cast<ATriggerLuminaire>(singleActor));
+	}
+
+	TArray<AActor*> managersInWorld;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AProgressEventManager::StaticClass(), managersInWorld);
+	if(managersInWorld.Num() > 0) manager = Cast<AProgressEventManager>(managersInWorld[0]);
+
+	if(manager)
+	{
+		manager->changeStatus.AddUObject(this, &ALightController::ChangeLightStatusEvent);
 	}
 
 }
@@ -53,6 +56,19 @@ void ALightController::Tick(float DeltaTime)
 		if(!currentOvelappedLuminaire->IsTriggerBeingOverlapped())
 		{
 			currentOvelap.ExecuteIfBound(true);
+		}
+	}
+
+}
+
+// Method binded by multicast delegate from AProgressEventManager class
+void ALightController::ChangeLightStatusEvent(FName lastKey, bool& newStatus)
+{
+	for(ATriggerLuminaire* singleLuminaire : luminaireOnWorld)
+	{
+		if(singleLuminaire && singleLuminaire->ActorHasTag(lastKey))
+		{
+			singleLuminaire->ChangeLight(newStatus);
 		}
 	}
 

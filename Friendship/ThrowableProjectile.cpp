@@ -43,6 +43,7 @@ void AThrowableProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActo
 
 }
 
+// Method in charge of Actors "life" on hit.
 void AThrowableProjectile::ManageThrowableDurability()
 {
     durabilityAmount--;

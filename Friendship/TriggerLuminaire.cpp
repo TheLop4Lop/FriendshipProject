@@ -13,6 +13,7 @@ ATriggerLuminaire::ATriggerLuminaire() : ABaseLuminaire()
 
 }
 
+// Called when the game starts or when spawned
 void ATriggerLuminaire::BeginPlay()
 {
     Super::BeginPlay();
@@ -21,6 +22,7 @@ void ATriggerLuminaire::BeginPlay()
 
 }
 
+// Called every frame
 void ATriggerLuminaire::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
@@ -51,6 +53,7 @@ void ATriggerLuminaire::SetAnxietyFunctionality()
 
 }
 
+// Returns the anxietyBox reference.
 bool ATriggerLuminaire::IsTriggerBeingOverlapped()
 {
     return characterIsOverlaping;

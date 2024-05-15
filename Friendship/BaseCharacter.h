@@ -64,6 +64,9 @@ public:
 	// Method that handles keys inventory, checks if player has the correct key.
 	bool HasKeyToOpenDoor(FName door);
 
+	// Returns the tag of the last key picked on the level.
+	FName LastPickedKey();
+
 private:
 	// Player's controller.
 	class ABaseCharacterController* characterController;

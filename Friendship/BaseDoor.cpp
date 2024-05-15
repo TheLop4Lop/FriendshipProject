@@ -77,6 +77,7 @@ bool ABaseDoor::IsDoorOpen()
 
 }
 
+// Checks if door is in position to close.
 bool ABaseDoor::CanDoorBeLocked()
 {
 	return canBeLocked;

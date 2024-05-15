@@ -3,9 +3,9 @@
 
 #include "BTTask_GetHideoutPoint.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Engine/TargetPoint.h"
 #include "StalkerController.h"
 #include "BaseStalker.h"
+#include "HidePoint.h"
 
 UBTTask_GetHideoutPoint::UBTTask_GetHideoutPoint()
 {
@@ -32,7 +32,7 @@ EBTNodeResult::Type UBTTask_GetHideoutPoint::ExecuteTask(UBehaviorTreeComponent&
     if(stalker->GetHideoutPoints().Num() > 0)
     {
         FVector distanceDifference = FVector(FLT_MAX, FLT_MAX, FLT_MAX);
-        ATargetPoint* closerPoint = nullptr;
+        AHidePoint* closerPoint = nullptr;
         for(int i = 0; i < stalker->GetHideoutPoints().Num(); i++)
         {
             FVector currentDistance = (stalker->GetActorLocation() - stalker->GetHideoutPoints()[i]->GetActorLocation());

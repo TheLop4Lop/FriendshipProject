@@ -80,6 +80,7 @@ protected:
 	// Timer that controls the anxiety rate callback, this is detemined by anxiety on player.
 	FTimerHandle anxietyTimer;
 
+	// Method that handles the Anxiety mouse movement event while interacting with door widget.
 	void ManageMouseAnxiety();
 
 };

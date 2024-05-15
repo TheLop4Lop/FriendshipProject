@@ -3,10 +3,9 @@
 
 #include "BTTask_GetStalkPoint.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Kismet/GameplayStatics.h"
-#include "Engine/TargetPoint.h"
 #include "StalkerController.h"
 #include "BaseStalker.h"
+#include "StalkPoint.h"
 
 UBTTask_GetStalkPoint::UBTTask_GetStalkPoint()
 {
@@ -33,7 +32,7 @@ EBTNodeResult::Type UBTTask_GetStalkPoint::ExecuteTask(UBehaviorTreeComponent& O
     if(stalker->GetStalkerPoints().Num() > 0)
     {
         FVector distanceDifference = FVector(FLT_MAX, FLT_MAX, FLT_MAX);
-        ATargetPoint* closerPoint = nullptr;
+        AStalkPoint* closerPoint = nullptr;
         for(int i = 0; i < stalker->GetStalkerPoints().Num(); i++)
         {
             FVector currentDistance = (stalker->GetActorLocation() - stalker->GetStalkerPoints()[i]->GetActorLocation());
