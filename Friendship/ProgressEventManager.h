@@ -51,7 +51,7 @@ protected:
 
 	// Target points to help spawn locations through gameplay.
 	UPROPERTY(EditAnywhere, Category = "Events", meta = (AllowPrivateAccess))
-	TArray<class ATargetPoint*> spawnPoints;
+	TArray<class ASpawnPoint*> spawnPoints;
 
 	// Key name needed to spawn stalker on event.
 	UPROPERTY(EditAnywhere, Category = "Events", meta = (AllowPrivateAccess))

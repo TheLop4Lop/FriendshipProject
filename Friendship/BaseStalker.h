@@ -30,10 +30,10 @@ public:
 	void SetCharacterVisibility(bool bVisibility);
 
 	// Retrieve the hideout points on the map.
-	TArray<class ATargetPoint*> GetHideoutPoints();
+	TArray<class AHidePoint*> GetHideoutPoints();
 
 	// Retrieve the stalker points on the map.
-	TArray<class ATargetPoint*> GetStalkerPoints();
+	TArray<class AStalkPoint*> GetStalkerPoints();
 
 protected:
 	////////////////////////////////////////////// AI PROPERTIES SECTION //////////////////////////////////////////////
@@ -41,10 +41,12 @@ protected:
 
 	// Stores the hideout points on the map.
 	UPROPERTY(EditAnywhere, Category = "AI Movement", meta = (AllowPrivateAccess))
-	TArray<class ATargetPoint*> hideoutPoints;
+	TArray<class AHidePoint*> hideoutPoints;
 
 	// Stores the stalker points on the map.
 	UPROPERTY(EditAnywhere, Category = "AI Movement", meta = (AllowPrivateAccess))
-	TArray<class ATargetPoint*> stalkerPoints;
+	TArray<class AStalkPoint*> stalkerPoints;
+
+	class AStalkerController* stalkerController;
 
 };

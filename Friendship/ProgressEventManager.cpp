@@ -4,9 +4,9 @@
 #include "ProgressEventManager.h"
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Engine/TargetPoint.h"
 #include "BaseCharacter.h"
 #include "BaseStalker.h"
+#include "SpawnPoint.h"
 
 // Sets default values
 AProgressEventManager::AProgressEventManager()
@@ -25,12 +25,12 @@ void AProgressEventManager::BeginPlay()
 	Super::BeginPlay();
 
 	TArray<AActor*> allActors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATargetPoint::StaticClass(), allActors);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASpawnPoint::StaticClass(), allActors);
 	for(AActor* singleActor : allActors)
 	{
-		if(singleActor && singleActor->ActorHasTag(TEXT("Spawn"))) spawnPoints.Add(Cast<ATargetPoint>(singleActor));
+		if(singleActor) spawnPoints.Add(Cast<ASpawnPoint>(singleActor));
 	}
-	UE_LOG(LogTemp, Display, TEXT("Spawn point on map: %i"), spawnPoints.Num());
+
 	character = Cast<ABaseCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	doOnce = true;
 	
@@ -74,8 +74,8 @@ void AProgressEventManager::SetEventBasedOnLastKey(FName lastKey)
 // Spawn Stalker on lastKey condition.
 void AProgressEventManager::SpawnStalker(FName lastKey)
 {
-    ATargetPoint* spawnPoint = nullptr;
-    for (ATargetPoint* singlePoint : spawnPoints)
+    ASpawnPoint* spawnPoint = nullptr;
+    for (ASpawnPoint* singlePoint : spawnPoints)
     {
         if (singlePoint && singlePoint->ActorHasTag(lastKey))
         {

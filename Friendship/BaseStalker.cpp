@@ -3,6 +3,10 @@
 
 #include "BaseStalker.h"
 #include "Components/CapsuleComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "StalkerController.h"
+#include "StalkPoint.h"
+#include "HidePoint.h"
 
 // Sets default values
 ABaseStalker::ABaseStalker()
@@ -16,7 +20,28 @@ ABaseStalker::ABaseStalker()
 void ABaseStalker::BeginPlay()
 {
 	Super::BeginPlay();
+
+	TArray<AActor*> allActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AHidePoint::StaticClass(), allActors);
+	for(AActor* singleHidePoint : allActors)
+	{
+		if(singleHidePoint) hideoutPoints.Add(Cast<AHidePoint>(singleHidePoint));
+	}
+
+	allActors.Empty();
+
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AStalkPoint::StaticClass(), allActors);
+	for(AActor* singleHidePoint : allActors)
+	{
+		if(singleHidePoint) stalkerPoints.Add(Cast<AStalkPoint>(singleHidePoint));
+	}
 	
+	stalkerController = GetWorld()->SpawnActor<AStalkerController>(AIControllerClass, GetActorLocation(), GetActorRotation());
+	if(stalkerController)
+	{
+		stalkerController->Possess(this);
+	}
+
 }
 
 // Called every frame
@@ -43,14 +68,14 @@ void ABaseStalker::SetCharacterVisibility(bool bVisibility)
 }
 
 // Retrieve the hideout points on the map.
-TArray<class ATargetPoint*> ABaseStalker::GetHideoutPoints()
+TArray<AHidePoint*> ABaseStalker::GetHideoutPoints()
 {
     return hideoutPoints;
 
 }
 
 // Retrieve the stalker points on the map.
-TArray<class ATargetPoint*> ABaseStalker::GetStalkerPoints()
+TArray<AStalkPoint*> ABaseStalker::GetStalkerPoints()
 {
 	return stalkerPoints;
 
